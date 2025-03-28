@@ -29,14 +29,21 @@ class RewardModel {
     rewards.add(
       RewardModel(
         name: 'The Toth Bag',
-        iconPath: 'assets/gucci.jpg',
+        iconPath: 'assets/bag.jpg',
         total_point: 2000,
       ),
     );
     rewards.add(
       RewardModel(
-        name: 'Guitar',
-        iconPath: 'assets/gucci.jpg',
+        name: 'Yeti ',
+        iconPath: 'assets/yeti.jpg',
+        total_point: 2000,
+      ),
+    );
+    rewards.add(
+      RewardModel(
+        name: 'Yeti v2 ',
+        iconPath: 'assets/yeti.jpg',
         total_point: 2000,
       ),
     );
