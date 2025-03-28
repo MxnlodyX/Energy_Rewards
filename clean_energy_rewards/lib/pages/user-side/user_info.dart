@@ -26,6 +26,21 @@ class _UserInfoState extends State<UserInfo> {
       body: SingleChildScrollView(
         child: Center(
           child: Container(
+            padding: EdgeInsets.all(15),
+            width: MediaQuery.of(context).size.width * 0.8,
+            height: MediaQuery.of(context).size.height * 0.55,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white, // สีพื้นหลังของ Container
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5), // ใช้สีเทาแบบโปร่งแสง
+                  blurRadius: 10, // ความเบลอของเงา (ค่า越大越模糊)
+                  spreadRadius: 2, // การกระจายของเงา
+                  offset: Offset(0, 4), // ตำแหน่งเงา (x,y)
+                ),
+              ],
+            ),
             child: Column(
               children: [
                 Text(
@@ -33,22 +48,13 @@ class _UserInfoState extends State<UserInfo> {
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 82, 49, 31),
+                    color: Color.fromARGB(225, 112, 72, 51),
                   ),
                 ),
                 SizedBox(height: 15),
                 CircleAvatar(
-                  radius: 80,
+                  radius: 75,
                   backgroundImage: AssetImage('assets/bag.jpg'),
-                ),
-                SizedBox(height: 15),
-
-                Text(
-                  "Navadol Somboonkul",
-                  style: TextStyle(
-                    fontSize: 19,
-                    color: Color.fromARGB(255, 82, 49, 31),
-                  ),
                 ),
                 SizedBox(height: 15),
 
@@ -71,6 +77,38 @@ class _UserInfoState extends State<UserInfo> {
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                     ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Name: ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(text: 'Nice lnwza\n'),
+                      TextSpan(
+                        text: 'Age: ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(text: '45\n'),
+                      TextSpan(
+                        text: 'Gender: ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(text: 'Male\n'),
+                      TextSpan(
+                        text: 'Address: ',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(text: '606-3727 Ullamcorper.\n'),
+                      TextSpan(text: 'Street Roseville NH 11523'),
+                    ],
+                  ),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Color.fromARGB(225, 112, 72, 51),
                   ),
                 ),
               ],
