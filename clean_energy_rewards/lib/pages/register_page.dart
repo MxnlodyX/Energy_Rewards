@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:clean_energy_rewards/service/api_server.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -209,36 +208,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Processing Data')),
                         );
-
-                        // เรียกฟังก์ชัน registerUser และส่งข้อมูลจาก TextEditingController
-                        final result = await registerUser(
-                          fullname: _fullNameController.text,
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                          address: _addrController.text,
-                          tel: _telController.text,
-                        );
-
-                        // ตรวจสอบผลลัพธ์
-                        if (result != null) {
-                          final fullname = result['fullname'];
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'สมัครสมาชิกสำเร็จ, ยินดีตอนรับคุณ: $fullname',
-                              ),
-                            ),
-                          );
-
-                          // ถ้าต้องการนำทางไปหน้าอื่น เช่นหน้า Login
-                          // Navigator.pushNamed(context, '/LoginPage');
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Registration failed.'),
-                            ),
-                          );
-                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
