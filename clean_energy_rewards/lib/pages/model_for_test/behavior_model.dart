@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 
 class BehaviorModel {
   String name;
