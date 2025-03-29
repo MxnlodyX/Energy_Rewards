@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:clean_energy_rewards/service/api_server.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -45,24 +43,8 @@ class _LoginPageState extends State<LoginPage> {
                 String email = _emailController.text.trim();
                 String password = _passwordController.text.trim();
                 // Call loginUser function from api_server.dart
-                UserCredential? user = await loginUser(
-                  email: email,
-                  password: password,
-                );
-                setState(() {
-                  _isLoading = false;
-                });
-                if (user != null) {
-                  // Navigate to home page if login is successful
-                  Navigator.pushReplacementNamed(context, '/home');
-                } else {
-                  // Show error message if needed
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Login failed. Please try again."),
-                    ),
-                  );
-                }
+
+                setState(() {});
               },
             ),
             RegisterRedirect(context),

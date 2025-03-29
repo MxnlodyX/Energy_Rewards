@@ -3,12 +3,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 
-// Note: Make sure to import your other custom files correctly
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/components/navBar.dart';
 import 'package:clean_energy_rewards/pages/components/sideBar.dart';
 import 'package:clean_energy_rewards/pages/user-side/user_behavior.dart';
-
 class addBehavior extends StatefulWidget {
   @override
   State<addBehavior> createState() => _addBehaviorState();
