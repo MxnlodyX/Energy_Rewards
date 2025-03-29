@@ -18,7 +18,7 @@ class CleanEnergy extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Clean Energy Rewards',
-      initialRoute: '/allReward',
+      initialRoute: '/userhomePage',
       routes: {
         //Entry gateway
         '/LoginPage': (context) => LoginPage(),
@@ -26,6 +26,7 @@ class CleanEnergy extends StatelessWidget {
         //userSide
         '/userhomePage': (context) => userHomepage(),
         '/userBehaviorPage': (context) => UserBehavior(),
+        '/addNewBehavior': (context) => addBehavior(),
         '/allReward': (context) => AllRewards(),
         '/userInfo': (context) => UserInfo(),
         '/howtousePage': (context) => howToUse(),
