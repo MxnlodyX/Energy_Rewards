@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class AddminLoginPage extends StatefulWidget {
+  const AddminLoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<AddminLoginPage> createState() => _AddminLoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  // Controllers for capturing email and password input
-  final TextEditingController _emailController = TextEditingController();
+class _AddminLoginPageState extends State<AddminLoginPage> {
+  final TextEditingController _adminID = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
-  // You can also add a loading indicator state if needed.
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,20 +23,15 @@ class _LoginPageState extends State<LoginPage> {
             LogoApp(),
             const SizedBox(height: 25),
             const Text(
-              "SIGN IN",
+              "Admin Sign In",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            EmailInput(controller: _emailController),
+            AdminID_Input(controller: _adminID),
             const SizedBox(height: 15),
             PasswdInput(controller: _passwordController),
             const SizedBox(height: 25),
-            SignInBtn(
-              onPressed: () {
-                Navigator.pushNamed((context), "/userhomePage");
-              },
-            ),
-            RegisterRedirect(context),
+            SignInBtn(onPressed: () {}),
             Center(
               child: Container(
                 margin: const EdgeInsets.only(top: 20),
@@ -68,42 +59,11 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            if (_isLoading) const Center(child: CircularProgressIndicator()),
           ],
         ),
       ),
     );
   }
-}
-
-Center RegisterRedirect(BuildContext context) {
-  return Center(
-    child: Container(
-      margin: const EdgeInsets.only(top: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "Don't have an account?",
-            style: TextStyle(fontSize: 16, color: Colors.black87),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(context, '/register_page');
-            },
-            child: const Text(
-              " Sign up",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
 }
 
 Center SignInBtn({required VoidCallback onPressed}) {
@@ -148,7 +108,7 @@ TextField PasswdInput({required TextEditingController controller}) {
   );
 }
 
-TextField EmailInput({required TextEditingController controller}) {
+TextField AdminID_Input({required TextEditingController controller}) {
   return TextField(
     controller: controller,
     decoration: InputDecoration(
