@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:clean_energy_rewards/pages/components/sideBar.dart';
-import 'package:clean_energy_rewards/pages/components/navBar.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'dart:io';
+
+// Note: Make sure to import your other custom files correctly
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
-import 'package:image_picker/image_picker.dart'; // Import for image picker
-import 'package:intl/intl.dart'; // For formatting the date
+import 'package:clean_energy_rewards/pages/components/navBar.dart';
+import 'package:clean_energy_rewards/pages/components/sideBar.dart';
+import 'package:clean_energy_rewards/pages/user-side/user_behavior.dart';
 
 class addBehavior extends StatefulWidget {
   @override
@@ -11,56 +15,80 @@ class addBehavior extends StatefulWidget {
 }
 
 class _addBehaviorState extends State<addBehavior> {
-  TextEditingController dateController = TextEditingController();
-  TextEditingController imageController = TextEditingController();
-  String imagePath = '';
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _behaviorController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  File? _imageFile;
+  bool _isSubmitting = false;
+  bool _isPickerActive = false;
 
-  // Date Picker Method
   Future<void> _pickDate() async {
-    DateTime initialDate = DateTime.now();
-    DateTime firstDate = DateTime(2000);
-    DateTime lastDate = DateTime(2100);
-
-    DateTime? selectedDate = await showDatePicker(
+    final DateTime? selectedDate = await showDatePicker(
       context: context,
-      initialDate: initialDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
     );
 
     if (selectedDate != null) {
       setState(() {
-        dateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
+        _dateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
       });
     }
   }
 
-  bool isPickerActive = false; // Flag to track if image picker is active
-
-  // Image Picker Method
   Future<void> _pickImage() async {
-    if (isPickerActive) {
-      return; // Prevent picking an image if the picker is already active
-    }
+    if (_isPickerActive) return;
 
-    setState(() {
-      isPickerActive = true;
-    });
+    setState(() => _isPickerActive = true);
 
     try {
       final pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
+        maxWidth: 1800,
+        maxHeight: 1800,
+        imageQuality: 85,
       );
+
       if (pickedFile != null) {
-        // Handle picked image
+        setState(() => _imageFile = File(pickedFile.path));
       }
     } catch (e) {
-      // Handle errors if any
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to pick image: ${e.toString()}')),
+      );
     } finally {
-      setState(() {
-        isPickerActive = false; // Reset the flag after the image picker is done
-      });
+      setState(() => _isPickerActive = false);
     }
+  }
+
+  void _submitForm() {
+    if (!_formKey.currentState!.validate()) return;
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please upload an image')));
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Behavior recorded successfully!')),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => UserBehavior()),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _behaviorController.dispose();
+    _dateController.dispose();
+    super.dispose();
   }
 
   @override
@@ -74,148 +102,229 @@ class _addBehaviorState extends State<addBehavior> {
       body: Align(
         alignment: Alignment.topCenter,
         child: Container(
-          margin: EdgeInsets.only(top: 135),
+          margin: const EdgeInsets.only(top: 135),
           width: MediaQuery.of(context).size.width * 0.85,
-          height: MediaQuery.of(context).size.height * 0.6,
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.6,
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+          ),
           decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 255, 255, 255),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            boxShadow: [
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
               BoxShadow(
-                color: const Color.fromARGB(255, 82, 49, 31),
+                color: Color.fromARGB(255, 82, 49, 31),
                 offset: Offset(0, 4),
                 blurRadius: 10,
                 spreadRadius: 1,
               ),
             ],
           ),
-          child: Padding(
-            padding: EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Energy Record Form",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 116, 79, 64),
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 15),
-                Text(
-                  "How do you use clean energy ?",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 116, 79, 64),
-                    fontSize: 17,
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Energy Record Form",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 116, 79, 64),
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    labelText: "Example Input : Use EV Car",
-                  ),
-                ),
-                SizedBox(height: 15),
-                Text(
-                  "On which date ?",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 116, 79, 64),
-                    fontSize: 17,
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: dateController,
-                  readOnly: true, // Make it read-only to prevent manual input
-                  onTap: _pickDate, // Tap to open the date picker
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    labelText: "Tap to Select Date",
-                  ),
-                ),
-                SizedBox(height: 15),
-                Text(
-                  "Upload your picture to prove ",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 116, 79, 64),
-                    fontSize: 17,
-                  ),
-                ),
-                SizedBox(height: 10),
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          height: MediaQuery.of(context).size.width * 0.3,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                    const SizedBox(height: 15),
 
-                            children: [
-                              Icon(
-                                Icons.image,
-                                color: Color.fromARGB(255, 116, 79, 64),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                imagePath.isEmpty
-                                    ? 'Choose a file here'
-                                    : 'Image Selected',
+                    // Behavior Description
+                    const Text(
+                      "How do you use clean energy?",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 116, 79, 64),
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _behaviorController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        labelText: "Example: Using EV Car",
+                        errorStyle: const TextStyle(color: Colors.red),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please describe your energy behavior';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Date Picker
+                    const Text(
+                      "On which date?",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 116, 79, 64),
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _dateController,
+                      readOnly: true,
+                      onTap: _pickDate,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        labelText: "Tap to select date",
+                        errorStyle: const TextStyle(color: Colors.red),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please select a date';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Image Upload
+                    const Text(
+                      "Upload your picture to prove",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 116, 79, 64),
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              height: MediaQuery.of(context).size.width * 0.3,
+                              decoration:
+                                  _imageFile != null
+                                      ? BoxDecoration(
+                                        image: DecorationImage(
+                                          image: FileImage(_imageFile!),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                      : null,
+                              child:
+                                  _imageFile == null
+                                      ? const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.image,
+                                            color: Color.fromARGB(
+                                              255,
+                                              116,
+                                              79,
+                                              64,
+                                            ),
+                                            size: 40,
+                                          ),
+                                          SizedBox(height: 10),
+                                          Text(
+                                            'Choose a file here',
+                                            style: TextStyle(
+                                              color: Color.fromARGB(
+                                                255,
+                                                116,
+                                                79,
+                                                64,
+                                              ),
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                      : null,
+                            ),
+                            if (_imageFile != null) ...[
+                              const SizedBox(height: 10),
+                              const Text(
+                                'Image selected',
                                 style: TextStyle(
-                                  color: Color.fromARGB(255, 116, 79, 64),
-                                  fontSize: 16,
+                                  color: Colors.green,
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Action Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              164,
+                              116,
+                              106,
+                              106,
+                            ),
+                            foregroundColor: Colors.white,
                           ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UserBehavior(),
+                              ),
+                            );
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              142,
+                              180,
+                              134,
+                            ),
+                            foregroundColor: Colors.white,
+                          ),
+                          onPressed: _isSubmitting ? null : _submitForm,
+                          child:
+                              _isSubmitting
+                                  ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                  : const Text('Submit'),
                         ),
                       ],
                     ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(164, 116, 106, 106),
-
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () {},
-                      child: const Text('Cancel'),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 142, 180, 134),
-
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () {},
-                      child: const Text('Submit'),
-                    ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
       ),
-
       bottomNavigationBar: BottomNavBar(
         selectedIndex: null,
         onItemTapped: null,
