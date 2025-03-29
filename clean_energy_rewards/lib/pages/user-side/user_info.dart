@@ -23,6 +23,7 @@ class _UserInfoState extends State<UserInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(),
+      drawer: menuDrawer(),
       body: SingleChildScrollView(
         child: Center(
           child: Container(
