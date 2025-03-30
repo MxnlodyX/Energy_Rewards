@@ -19,57 +19,59 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            LogoApp(),
-            const SizedBox(height: 25),
-            const Text(
-              "SIGN IN",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            EmailInput(controller: _emailController),
-            const SizedBox(height: 15),
-            PasswdInput(controller: _passwordController),
-            const SizedBox(height: 25),
-            SignInBtn(
-              onPressed: () {
-                Navigator.pushNamed((context), "/userhomePage");
-              },
-            ),
-            RegisterRedirect(context),
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Do you need back to Gateway?",
-                      style: TextStyle(fontSize: 16, color: Colors.black87),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/LoginGateWay');
-                      },
-                      child: const Text(
-                        " Tap here",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color.fromARGB(255, 47, 66, 151),
-                          fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              LogoApp(),
+              const SizedBox(height: 25),
+              const Text(
+                "SIGN IN",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              EmailInput(controller: _emailController),
+              const SizedBox(height: 15),
+              PasswdInput(controller: _passwordController),
+              const SizedBox(height: 25),
+              SignInBtn(
+                onPressed: () {
+                  Navigator.pushNamed((context), "/userhomePage");
+                },
+              ),
+              RegisterRedirect(context),
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Do you need back to Gateway?",
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/LoginGateWay');
+                        },
+                        child: const Text(
+                          " Tap here",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 47, 66, 151),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            if (_isLoading) const Center(child: CircularProgressIndicator()),
-          ],
+              if (_isLoading) const Center(child: CircularProgressIndicator()),
+            ],
+          ),
         ),
       ),
     );

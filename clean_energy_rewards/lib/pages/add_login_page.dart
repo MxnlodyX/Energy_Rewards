@@ -15,51 +15,53 @@ class _AddminLoginPageState extends State<AddminLoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(25),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            LogoApp(),
-            const SizedBox(height: 25),
-            const Text(
-              "Admin Sign In",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            AdminID_Input(controller: _adminID),
-            const SizedBox(height: 15),
-            PasswdInput(controller: _passwordController),
-            const SizedBox(height: 25),
-            SignInBtn(onPressed: () {}),
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Do you need back to Gateway?",
-                      style: TextStyle(fontSize: 16, color: Colors.black87),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/LoginGateWay');
-                      },
-                      child: const Text(
-                        " Tap here",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color.fromARGB(255, 47, 66, 151),
-                          fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              LogoApp(),
+              const SizedBox(height: 25),
+              const Text(
+                "Admin Sign In",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              AdminID_Input(controller: _adminID),
+              const SizedBox(height: 15),
+              PasswdInput(controller: _passwordController),
+              const SizedBox(height: 25),
+              SignInBtn(onPressed: () {}),
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Do you need back to Gateway?",
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/LoginGateWay');
+                        },
+                        child: const Text(
+                          " Tap here",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 47, 66, 151),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
