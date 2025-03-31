@@ -4,14 +4,15 @@ const multer = require("multer"); // Added missing import
 const path = require("path"); // Added missing import
 const cors = require("cors"); // Added missing import
 const db = require("./dbConnection"); // Assuming this exports the pool
-
+const rewardAPI = require("./api/rewardsRoutes")
+const registerAPI = require("./api/register")
 const app = express();
 const port = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
-
+app.use("/api", rewardAPI)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "uploads/");
