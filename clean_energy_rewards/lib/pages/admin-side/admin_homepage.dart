@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:clean_energy_rewards/pages/components/sideBar.dart';
-import 'package:clean_energy_rewards/pages/components/navBar.dart';
+import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 
 
