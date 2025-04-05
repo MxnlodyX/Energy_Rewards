@@ -3,7 +3,7 @@ import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/behavior_model.dart';
-import 'package:clean_energy_rewards/pages/user-side/add_new_beh.dart';
+
 
 class Checkuserbehavior extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
   List<BehaviorModel> filteredBehavior = [];
   TextEditingController searchController = TextEditingController();
   String? statusFilter;
-  bool _isSearchExpanded = false;
+
 
   @override
   void initState() {
@@ -37,29 +37,12 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
     });
   }
 
-  void _filterBehaviors() {
-    setState(() {
-      filteredBehavior =
-          behavior.where((item) {
-            final matchesSearch = item.name.toLowerCase().contains(
-              searchController.text.toLowerCase(),
-            );
-
-            final matchesStatus =
-                statusFilter == null ||
-                item.status.toLowerCase() == statusFilter!.toLowerCase();
-
-            return matchesSearch && matchesStatus;
-          }).toList();
-    });
-  }
 
   void _resetFilters() {
     setState(() {
       searchController.clear();
       statusFilter = null;
       filteredBehavior = behavior;
-      _isSearchExpanded = false;
     });
   }
 
@@ -99,7 +82,7 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 82, 49, 31),
                           ),
-                        )
+                        ),
                       ],
                     ),
                     // Behavior Cards
