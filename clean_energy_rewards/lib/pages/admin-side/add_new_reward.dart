@@ -130,7 +130,7 @@ class _AddNewRewardState extends State<AddNewReward> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "Energy Record Form",
+                      "Add New Reward",
                       style: TextStyle(
                         color: Color.fromARGB(255, 116, 79, 64),
                         fontSize: 25,
@@ -141,7 +141,7 @@ class _AddNewRewardState extends State<AddNewReward> {
 
                     // Behavior Description
                     const Text(
-                      "How do you use clean energy?",
+                      "NAME:",
                       style: TextStyle(
                         color: Color.fromARGB(255, 116, 79, 64),
                         fontSize: 17,
@@ -154,12 +154,12 @@ class _AddNewRewardState extends State<AddNewReward> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        labelText: "Example: Using EV Car",
+                        labelText: "Example Input: Doll",
                         errorStyle: const TextStyle(color: Colors.red),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please describe your energy behavior';
+                          return 'Please describe Name Reward';
                         }
                         return null;
                       },
@@ -168,7 +168,7 @@ class _AddNewRewardState extends State<AddNewReward> {
 
                     // Date Picker
                     const Text(
-                      "On which date?",
+                      "Quantity:",
                       style: TextStyle(
                         color: Color.fromARGB(255, 116, 79, 64),
                         fontSize: 17,
@@ -176,25 +176,47 @@ class _AddNewRewardState extends State<AddNewReward> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
-                      controller: _dateController,
-                      readOnly: true,
-                      onTap: _pickDate,
+                      controller: _behaviorController,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        labelText: "Tap to select date",
+                        labelText: "Example Input: 999",
                         errorStyle: const TextStyle(color: Colors.red),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please select a date';
+                          return 'Please describe Quantity Reward';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 15),
-
+                    const Text(
+                      "TOTAL POINT:",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 116, 79, 64),
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _behaviorController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        labelText: "Example Input: 3000",
+                        errorStyle: const TextStyle(color: Colors.red),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please describe Point Reward';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
                     // Image Upload
                     const Text(
                       "Upload your picture to prove",
