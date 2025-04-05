@@ -125,102 +125,107 @@ class _RewardmanagementState extends State<Rewardmanagement> {
                       )
                     else
                       Column(
-                        children: rewards.map((item) {
-                          return Card(
-                            color: Colors.white,
-                            margin: EdgeInsets.only(bottom: 16),
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () {},
-                              child: Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Column(
-                                  children: [
-                                    Row(
+                        children:
+                            rewards.map((item) {
+                              return Card(
+                                color: Colors.white,
+                                margin: EdgeInsets.only(bottom: 16),
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(12),
+                                  onTap: () {},
+                                  child: Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
                                       children: [
-                                        Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            image: DecorationImage(
-                                              image: AssetImage(
-                                                item.iconPath,
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 60,
+                                              height: 60,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                    item.iconPath,
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
-                                              fit: BoxFit.cover,
                                             ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 15),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                item.name,
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(height: 4),
-                                              Text(
-                                                'Date: ${item.name}',
-                                                style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: const Color.fromARGB(
-                                                    255,
-                                                    27,
-                                                    23,
-                                                    23,
-                                                  ),
-                                                ),
-                                              ),
-                                              Row(
+                                            SizedBox(width: 15),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  IconButton(
-                                                    onPressed: () {},
-                                                    icon: Icon(
-                                                      Icons.edit,
-                                                      size: 18,
+                                                  Text(
+                                                    item.name,
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-                                                    padding: EdgeInsets.zero,
-                                                    constraints:
-                                                        BoxConstraints(),
-                                                    iconSize: 18,
-                                                    color: Colors.blue,
                                                   ),
-                                                  IconButton(
-                                                    onPressed: () {},
-                                                    icon: Icon(
-                                                      Icons.delete,
-                                                      size: 18,
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    'Date: ${item.name}',
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color:
+                                                          const Color.fromARGB(
+                                                            255,
+                                                            27,
+                                                            23,
+                                                            23,
+                                                          ),
                                                     ),
-                                                    padding: EdgeInsets.zero,
-                                                    constraints:
-                                                        BoxConstraints(),
-                                                    iconSize: 18,
-                                                    color: Colors.red,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      IconButton(
+                                                        onPressed: () {},
+                                                        icon: Icon(
+                                                          Icons.edit,
+                                                          size: 18,
+                                                        ),
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        constraints:
+                                                            BoxConstraints(),
+                                                        iconSize: 18,
+                                                        color: Colors.blue,
+                                                      ),
+                                                      IconButton(
+                                                        onPressed: () {},
+                                                        icon: Icon(
+                                                          Icons.delete,
+                                                          size: 18,
+                                                        ),
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        constraints:
+                                                            BoxConstraints(),
+                                                        iconSize: 18,
+                                                        color: Colors.red,
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
+                              );
+                            }).toList(),
                       ),
                   ],
                 ),
