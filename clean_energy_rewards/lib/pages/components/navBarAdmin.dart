@@ -1,6 +1,7 @@
 import 'package:clean_energy_rewards/pages/admin-side/admin_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_energy_rewards/pages/admin-side/CheckUserBehavior.dart';
+import 'package:clean_energy_rewards/pages/admin-side/Rewardmanagement.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int? selectedIndex;
@@ -38,7 +39,7 @@ class BottomNavBar extends StatelessWidget {
             index: 2,
             icon: Icons.stars,
             label: 'Rewards',
-            destination: AdminHomepage(),
+            destination: Rewardmanagement(),
           ),
           _buildNavItem(
             context: context,
