@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
-import 'package:clean_energy_rewards/pages/user-side/add_new_beh.dart';
+import 'package:clean_energy_rewards/pages/admin-side/add_new_reward.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/reward_model.dart';
 
 class Rewardmanagement extends StatefulWidget {
@@ -62,7 +62,7 @@ class _RewardmanagementState extends State<Rewardmanagement> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => addBehavior(),
+                                    builder: (context) => AddNewReward(),
                                   ),
                                 );
                               },
