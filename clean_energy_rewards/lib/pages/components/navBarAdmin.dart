@@ -1,5 +1,6 @@
 import 'package:clean_energy_rewards/pages/admin-side/admin_homepage.dart';
 import 'package:flutter/material.dart';
+import 'package:clean_energy_rewards/pages/admin-side/CheckUserBehavior.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int? selectedIndex;
@@ -30,7 +31,7 @@ class BottomNavBar extends StatelessWidget {
             index: 1,
             icon: Icons.add_circle_outline,
             label: 'Behavior',
-            destination: AdminHomepage(),
+            destination: Checkuserbehavior(),
           ),
           _buildNavItem(
             context: context,
