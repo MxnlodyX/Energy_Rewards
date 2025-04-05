@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
-import 'package:clean_energy_rewards/pages/model_for_test/behavior_model.dart';
 import 'package:clean_energy_rewards/pages/user-side/add_new_beh.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/reward_model.dart';
 
@@ -30,19 +29,6 @@ class _RewardmanagementState extends State<Rewardmanagement> {
   void initState() {
     super.initState();
     _getRewards();
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'success':
-        return const Color.fromARGB(216, 76, 175, 79);
-      case 'pending':
-        return Colors.orange;
-      case 'rejected':
-        return Colors.red;
-      default:
-        return const Color.fromARGB(255, 251, 250, 248);
-    }
   }
 
   @override
