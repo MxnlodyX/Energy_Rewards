@@ -93,7 +93,9 @@ class _AllRewardsState extends State<AllRewards> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/rewardHistory");
+                    },
                     style: TextButton.styleFrom(
                       backgroundColor: Color.fromARGB(255, 142, 180, 134),
                       padding: EdgeInsets.all(10),

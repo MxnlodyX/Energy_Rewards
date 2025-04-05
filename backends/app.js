@@ -5,6 +5,8 @@ const path = require("path");
 const cors = require("cors");
 const db = require("./dbConnection");
 const rewardsRoutes = require("./api/rewardsRoutes");
+const accountRoutes = require("./api/accountRoutes");
+
 const app = express();
 const port = process.env.PORT;
 
@@ -25,6 +27,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use("/api", rewardsRoutes);
+app.use("/api", accountRoutes);
 
 app.post("/api/add_Behavior", upload.single("image"), async (req, res) => {
     try {

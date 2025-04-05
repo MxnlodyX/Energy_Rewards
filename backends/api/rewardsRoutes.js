@@ -115,4 +115,16 @@ router.delete("/delete_reward/:id", async (req, res) => {
         });
     }
 })
+
+//user-action
+router.post("/user_ExchangeReward/:reward_id", async (req, res) => {
+    const reward_id = req.params.body;
+    const user_id = req.user.id;
+    try {
+        const [result] = await db.query("DELETE FROM rewards WHERE reward_id = ?",
+            [req.params.id]);
+    } catch {
+
+    }
+})
 module.exports = router;
