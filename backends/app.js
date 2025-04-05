@@ -28,59 +28,6 @@ const upload = multer({ storage });
 
 app.use("/api", rewardsRoutes);
 app.use("/api", accountRoutes);
-
-app.post("/api/add_Behavior", upload.single("image"), async (req, res) => {
-    try {
-        const { user_id, description, behaviorDate } = req.body;
-        const imagePath = req.file ? req.file.path : null;
-
-        if (!user_id || !description || !behaviorDate) {
-            return res.status(400).json({
-                success: false,
-                message: "Missing required fields (user_id, description, behaviorDate)"
-            });
-        }
-
-        const [result] = await db.query(
-            "INSERT INTO behavior_records (user_id, description, behavior_date, image_path) VALUES (?, ?, ?, ?)",
-            [user_id, description, behaviorDate, imagePath]
-        );
-
-        res.status(201).json({
-            success: true,
-            message: "Behavior Recorded Successfully",
-            behaviorID: result.insertId
-        });
-    } catch (error) {
-        console.error("Database Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Error saving behavior",
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
-});
-
-app.delete("/api/del_Behavior/:id", async (req, res) => {
-    try {
-        const [result] = await db.query(
-            "DELETE FROM behavior_records WHERE id = ?",
-            [req.params.id]
-        );
-        res.status(200).json({
-            success: true,
-            message: "Delete behavior successfully",
-            affectedRows: result.affectedRows
-        })
-    } catch {
-        console.error("Database Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Error saving behavior",
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-    }
-})
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
 });
