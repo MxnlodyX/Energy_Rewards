@@ -4,6 +4,7 @@ import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/admin-side/add_new_reward.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/reward_model.dart';
+import 'package:clean_energy_rewards/pages/admin-side/Edit_reward.dart';
 
 class Rewardmanagement extends StatefulWidget {
   @override
@@ -174,7 +175,12 @@ class _RewardmanagementState extends State<Rewardmanagement> {
                                                   Row(
                                                     children: [
                                                       IconButton(
-                                                        onPressed: () {},
+                                                        onPressed: () {
+                                                          Navigator.pushNamed(
+                                                            context,
+                                                            '/Edidreward',
+                                                          );
+                                                        },
                                                         icon: Icon(
                                                           Icons.edit,
                                                           size: 18,
