@@ -29,16 +29,16 @@ class _UserInfoState extends State<UserInfo> {
           child: Container(
             padding: EdgeInsets.all(15),
             width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.55,
+            height: MediaQuery.of(context).size.height * 0.65,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Colors.white, // สีพื้นหลังของ Container
+              color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.5), // ใช้สีเทาแบบโปร่งแสง
-                  blurRadius: 10, // ความเบลอของเงา (ค่า越大越模糊)
-                  spreadRadius: 2, // การกระจายของเงา
-                  offset: Offset(0, 4), // ตำแหน่งเงา (x,y)
+                  color: Colors.grey.withOpacity(0.5),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
@@ -56,29 +56,6 @@ class _UserInfoState extends State<UserInfo> {
                 CircleAvatar(
                   radius: 75,
                   backgroundImage: AssetImage('assets/bag.jpg'),
-                ),
-                SizedBox(height: 15),
-
-                OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: const Color.fromARGB(255, 61, 143, 65),
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-                  ),
-                  child: Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 45, 110, 56),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                 ),
                 SizedBox(height: 20),
                 Text.rich(
