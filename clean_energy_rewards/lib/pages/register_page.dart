@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,21 +13,107 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _addrController = TextEditingController();
   final TextEditingController _telController = TextEditingController();
+  File? _imageFile;
+  bool _isSubmitting = false;
+  bool _isPickerActive = false;
 
   @override
   void dispose() {
-    _fullNameController.dispose();
+    _firstnameController.dispose();
+    _lastnameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _addrController.dispose();
     _telController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    if (_isPickerActive) return;
+
+    setState(() => _isPickerActive = true);
+
+    try {
+      final pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1800,
+        maxHeight: 1800,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        setState(() => _imageFile = File(pickedFile.path));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to pick image: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => _isPickerActive = false);
+    }
+  }
+
+  Future<void> _registerUser() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isSubmitting = true);
+    try {
+      const url = "http://192.168.56.1:4001/api/register";
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+      request.fields['firstname'] = _firstnameController.text;
+      request.fields['lastname'] = _lastnameController.text;
+      request.fields['email'] = _emailController.text;
+      request.fields['password'] = _passwordController.text;
+      request.fields['address'] = _addrController.text;
+      request.fields['tel_number'] = _telController.text;
+
+      if (_imageFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', _imageFile!.path),
+        );
+      }
+      var response = await request.send();
+      final responseData = await response.stream.bytesToString();
+      final jsonResponse = json.decode(responseData);
+
+      if (response.statusCode == 201) {
+        _showSuccessSnackbar();
+        Navigator.pushNamed(context, "/LoginPage");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(jsonResponse['error'] ?? 'Registration failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() => _isSubmitting = false);
+    }
+  }
+
+  void _showSuccessSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Register successfully!'),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromARGB(255, 142, 180, 134),
+      ),
+    );
   }
 
   @override
@@ -52,7 +142,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
-                  controller: _fullNameController,
+                  controller: _firstnameController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
@@ -69,11 +159,39 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     prefixIcon: Icon(Icons.person, color: Colors.grey),
-                    hintText: 'Enter your Fullname',
+                    hintText: 'Enter your Firstname',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your fullname';
+                      return 'Please enter your Firstname';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 15),
+                TextFormField(
+                  controller: _lastnameController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide(
+                        color: const Color.fromARGB(255, 142, 180, 134),
+                        width: 2,
+                      ),
+                    ),
+                    prefixIcon: Icon(Icons.person, color: Colors.grey),
+                    hintText: 'Enter your Lastname',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your Lastname';
                     }
                     return null;
                   },
@@ -102,6 +220,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
+                    }
+                    // ตรวจสอบรูปแบบอีเมล
+                    final emailRegex = RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    );
+                    if (!emailRegex.hasMatch(value)) {
+                      return 'Invalid email format';
                     }
                     return null;
                   },
@@ -200,16 +325,83 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 SizedBox(height: 15),
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          height: MediaQuery.of(context).size.width * 0.4,
+                          decoration:
+                              _imageFile != null
+                                  ? BoxDecoration(
+                                    image: DecorationImage(
+                                      image: FileImage(_imageFile!),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  )
+                                  : null,
+                          child:
+                              _imageFile == null
+                                  ? const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.image,
+                                        color: Color.fromARGB(255, 116, 79, 64),
+                                        size: 40,
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Choose a file here ',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(
+                                            255,
+                                            116,
+                                            79,
+                                            64,
+                                          ),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        '( not required )',
+                                        style: TextStyle(
+                                          color: Color.fromARGB(
+                                            255,
+                                            128,
+                                            110,
+                                            103,
+                                          ),
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                  : null,
+                        ),
+                        if (_imageFile != null) ...[
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Image selected',
+                            style: TextStyle(color: Colors.green, fontSize: 14),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15),
+
                 Center(
                   child: ElevatedButton.icon(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        // แสดง SnackBar เพื่อบอกว่ากำลังประมวลผล
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
-                        );
-                      }
-                    },
+                    onPressed: _isSubmitting ? null : _registerUser,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 142, 180, 134),
                       foregroundColor: Colors.white,
