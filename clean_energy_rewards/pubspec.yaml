@@ -30,13 +30,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.5
-  path: ^1.8.2
+  http: ^1.3.0
+  path: ^1.9.1
   flutter_data_table: ^1.0.1 # ตรวจสอบเวอร์ชันล่าสุดจาก pub.dev
 
   cupertino_icons: ^1.0.8
-  image_picker: ^0.8.5+3 # Or the latest version from pub.dev
+  image_picker: ^1.1.2 # Or the latest version from pub.dev
   intl: ^0.17.0 # Or the latest version from pub.dev
+  async: ^2.12.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

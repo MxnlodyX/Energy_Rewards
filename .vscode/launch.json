@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "clean_energy_rewards",
+            "cwd": "clean_energy_rewards",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "clean_energy_rewards (profile mode)",
+            "cwd": "clean_energy_rewards",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "clean_energy_rewards (release mode)",
+            "cwd": "clean_energy_rewards",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

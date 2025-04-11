@@ -91,7 +91,6 @@ router.get("/get_rewards", async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Error Get Rewards",
-            error: error.message
         });
     }
 })
@@ -107,11 +106,9 @@ router.delete("/delete_reward/:id", async (req, res) => {
             affectedRows: result.affectedRows
         })
     } catch {
-        console.error("Database Error:", error);
         res.status(500).json({
             success: false,
             message: "Error delete Rewards",
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 })
