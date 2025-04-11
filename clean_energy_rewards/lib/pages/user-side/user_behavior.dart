@@ -430,7 +430,12 @@ class _UserBehaviorState extends State<UserBehavior> {
                                                       Row(
                                                         children: [
                                                           IconButton(
-                                                            onPressed: () {},
+                                                            onPressed: () {
+                                                              Navigator.pushNamed(
+                                                                context,
+                                                                '/editBehavior',
+                                                              );
+                                                            },
                                                             icon: Icon(
                                                               Icons.edit,
                                                               size: 18,
@@ -443,7 +448,62 @@ class _UserBehaviorState extends State<UserBehavior> {
                                                             color: Colors.blue,
                                                           ),
                                                           IconButton(
-                                                            onPressed: () {},
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder: (
+                                                                  BuildContext
+                                                                  context,
+                                                                ) {
+                                                                  return AlertDialog(
+                                                                    title: Text(
+                                                                      "Confirm Delete",
+                                                                    ),
+
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () => Navigator.pop(
+                                                                              context,
+                                                                            ),
+                                                                        child: Text(
+                                                                          "Cancel",
+                                                                          style: TextStyle(
+                                                                            color:
+                                                                                Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      TextButton(
+                                                                        onPressed: () {
+                                                                          Navigator.pop(
+                                                                            context,
+                                                                          ); // Close dialog
+                                                                          _showExchangeSuccessSnackbar(
+                                                                            context,
+                                                                          );
+                                                                          Navigator.pop(
+                                                                            context,
+                                                                          ); // Go back to previous screen
+                                                                        },
+                                                                        child: Text(
+                                                                          "Confirm",
+                                                                          style: TextStyle(
+                                                                            color: Color.fromARGB(
+                                                                              255,
+                                                                              248,
+                                                                              71,
+                                                                              71,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },
+                                                              );
+                                                            },
                                                             icon: Icon(
                                                               Icons.delete,
                                                               size: 18,
@@ -484,4 +544,16 @@ class _UserBehaviorState extends State<UserBehavior> {
       ),
     );
   }
+}
+
+void _showExchangeSuccessSnackbar(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Delete successfully!'),
+      duration: Duration(seconds: 2),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      backgroundColor: Color.fromARGB(255, 142, 180, 134),
+    ),
+  );
 }

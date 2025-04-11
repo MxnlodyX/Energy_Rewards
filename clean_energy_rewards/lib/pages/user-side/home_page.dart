@@ -4,6 +4,12 @@ import 'package:clean_energy_rewards/pages/components/sideBar.dart';
 import 'package:clean_energy_rewards/pages/components/navBar.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/reward_model.dart';
+import 'dart:math';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class userHomepage extends StatefulWidget {
   const userHomepage({super.key});
@@ -15,17 +21,48 @@ class userHomepage extends StatefulWidget {
 class _userHomepageState extends State<userHomepage> {
   int _selectedIndex = 0;
   List<RewardModel> rewards = [];
+  Map<String, dynamic>? _userData;
 
   @override
   void initState() {
     super.initState();
     _getRewards();
+    _userInfomation();
   }
 
   void _getRewards() {
     setState(() {
       rewards = RewardModel.getRewards();
     });
+  }
+
+  Future<String?> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
+  Future<void> _userInfomation() async {
+    String? id = await getUserId();
+    final url = "http://192.168.56.1:4001/api/getInfo/$id";
+    try {
+      var response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        setState(() {
+          _userData = decoded['data'];
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Exception caught: $e");
+    }
   }
 
   void _onItemTapped(int index) {
@@ -79,7 +116,7 @@ class _userHomepageState extends State<userHomepage> {
                         children: [
                           TextSpan(text: "Welcome "),
                           TextSpan(
-                            text: "Navadol Somboonkul",
+                            text: _userData?['firstname'],
                             style: TextStyle(
                               decoration: TextDecoration.underline,
                               decorationColor: Colors.white,
@@ -108,7 +145,7 @@ class _userHomepageState extends State<userHomepage> {
                         Icon(Icons.eco, color: Colors.white, size: 16),
                         SizedBox(width: 5),
                         Text(
-                          "Supporting SGD 7: Affordable & Clean Energy",
+                          "Supporting SGD 7: ",
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.white.withOpacity(0.9),
@@ -173,7 +210,7 @@ class _userHomepageState extends State<userHomepage> {
                         ),
                         SizedBox(width: 12),
                         Text(
-                          "2,500",
+                          (_userData?['total_point'] ?? 0).toString(),
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -196,13 +233,12 @@ class _userHomepageState extends State<userHomepage> {
               /// **แก้ไขการแสดง Reward**
               Container(
                 width: MediaQuery.of(context).size.width * 0.85,
-                height:
-                    MediaQuery.of(context).size.height * 0.32, // ปรับความสูง
+                height: MediaQuery.of(context).size.height * 0.38,
                 child: Column(
                   children: [
                     Container(
                       width: MediaQuery.of(context).size.width * 0.9,
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.35,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -223,7 +259,9 @@ class _userHomepageState extends State<userHomepage> {
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, "/allReward");
+                                  },
                                   child: Row(
                                     children: [
                                       Text(
@@ -255,16 +293,21 @@ class _userHomepageState extends State<userHomepage> {
                               padding: EdgeInsets.symmetric(horizontal: 8),
                               separatorBuilder:
                                   (context, index) => SizedBox(width: 16),
-                              itemCount: rewards.length,
+                              itemCount: min(4, rewards.length),
                               scrollDirection: Axis.horizontal,
                               physics: BouncingScrollPhysics(),
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    // Add onTap functionality
+                                    Navigator.pushNamed(
+                                      context,
+                                      "/detailReward",
+                                      arguments: rewards[index],
+                                    );
                                   },
                                   child: Container(
                                     width: 150,
+                                    height: 350,
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       borderRadius: BorderRadius.circular(16),
