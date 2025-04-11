@@ -21,7 +21,7 @@ import 'package:clean_energy_rewards/pages/user-side/detail_reward.dart';
 import 'package:clean_energy_rewards/pages/user-side/edit_user_info.dart';
 
 //admin-side
-impo 'package:clean_energy_rewards/pages/admin-side/admin_homepage.dart';
+import 'package:clean_energy_rewards/pages/admin-side/admin_homepage.dart';
 
 void main() async {
   runApp(CleanEnergy());
