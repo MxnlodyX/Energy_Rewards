@@ -146,7 +146,7 @@ class _RewardHistoryState extends State<RewardHistory> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: const Color.fromARGB(255, 255, 255, 255),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
@@ -171,7 +171,7 @@ class _RewardHistoryState extends State<RewardHistory> {
                           ),
 
                       // Pagination controls
-                      if (_totalPages > 1) _buildPaginationControls(),
+                      _buildPaginationControls(),
                       const SizedBox(height: 20),
                     ],
                   ),
@@ -385,17 +385,6 @@ class _RewardHistoryState extends State<RewardHistory> {
           Text(
             'No rewards match your search',
             style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-          ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                searchQuery = '';
-                currentPage = 1;
-                _applyFilters();
-              });
-            },
-            child: const Text('Clear search'),
           ),
         ],
       ),
