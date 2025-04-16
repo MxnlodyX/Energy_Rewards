@@ -14,9 +14,7 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 85,
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(228, 82, 49, 31),
-      ),
+      decoration: BoxDecoration(color: const Color.fromARGB(228, 82, 49, 31)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -40,13 +38,6 @@ class BottomNavBar extends StatelessWidget {
             icon: Icons.stars,
             label: 'Rewards',
             destination: Rewardmanagement(),
-          ),
-          _buildNavItem(
-            context: context,
-            index: 3,
-            icon: Icons.person,
-            label: 'Profile',
-            destination: AdminHomepage(),
           ),
         ],
       ),
