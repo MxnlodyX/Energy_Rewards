@@ -16,9 +16,10 @@ const port = process.env.PORT;
 
 app.use(cors());
 app.use("/uploads", express.static("uploads"));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(express.json()); // For JSON data
-app.use(express.urlencoded({ extended: true })); // For form data
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "uploads/");
