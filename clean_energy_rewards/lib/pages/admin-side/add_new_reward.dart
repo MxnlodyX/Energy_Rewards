@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:clean_energy_rewards/pages/admin-side/Rewardmanagement.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
@@ -7,8 +10,6 @@ import 'dart:io';
 import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
-import 'package:clean_energy_rewards/pages/admin-side/Rewardmanagement.dart';
-import 'package:clean_energy_rewards/pages/user-side/user_behavior.dart';
 
 class AddNewReward extends StatefulWidget {
   @override
@@ -17,26 +18,14 @@ class AddNewReward extends StatefulWidget {
 
 class _AddNewRewardState extends State<AddNewReward> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _behaviorController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _pointController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
   File? _imageFile;
   bool _isSubmitting = false;
   bool _isPickerActive = false;
-
-  Future<void> _pickDate() async {
-    final DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (selectedDate != null) {
-      setState(() {
-        _dateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
-      });
-    }
-  }
 
   Future<void> _pickImage() async {
     if (_isPickerActive) return;
@@ -63,8 +52,19 @@ class _AddNewRewardState extends State<AddNewReward> {
     }
   }
 
-  void _submitForm() {
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _quantityController.dispose();
+    _pointController.dispose();
+    _descriptionController.dispose();
+
+    super.dispose();
+  }
+
+  Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
+
     if (_imageFile == null) {
       ScaffoldMessenger.of(
         context,
@@ -73,59 +73,88 @@ class _AddNewRewardState extends State<AddNewReward> {
     }
 
     setState(() => _isSubmitting = true);
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Behavior recorded successfully!')),
-      );
-      Navigator.pushReplacement(
+
+    final uri = Uri.parse('http://192.168.56.1:4001/api/add_rewards');
+    final request = http.MultipartRequest('POST', uri);
+
+    request.fields['reward_name'] = _nameController.text;
+    request.fields['description'] = _descriptionController.text;
+    request.fields['exchange_point'] = _pointController.text;
+    request.fields['quantity'] = _quantityController.text;
+
+    request.files.add(
+      await http.MultipartFile.fromPath('image', _imageFile!.path),
+    );
+
+    try {
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 201) {
+        _showSuccessSnackbar();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Rewardmanagement()),
+        );
+      } else {
+        final jsonResponse = json.decode(response.body);
+        final errorMessage = jsonResponse['message'] ?? 'Unknown error';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add reward: $errorMessage')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
         context,
-        MaterialPageRoute(builder: (context) => Rewardmanagement()),
-      );
-    });
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+    } finally {
+      setState(() => _isSubmitting = false);
+    }
   }
 
-  @override
-  void dispose() {
-    _behaviorController.dispose();
-    _dateController.dispose();
-    super.dispose();
+  void _showSuccessSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Add New rewards Successfully!'),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromARGB(255, 142, 180, 134),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       extendBodyBehindAppBar: true,
       appBar: CustomAppBar(),
       drawer: menuDrawer(),
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: Container(
-          margin: const EdgeInsets.only(top: 135),
-          width: MediaQuery.of(context).size.width * 0.85,
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height * 0.6,
-            maxHeight: MediaQuery.of(context).size.height * 0.8,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: const [
-              BoxShadow(
-                color: Color.fromARGB(255, 82, 49, 31),
-                offset: Offset(0, 4),
-                blurRadius: 10,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 50),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: Container(
+            margin: const EdgeInsets.only(top: 135),
+            width: MediaQuery.of(context).size.width * 0.85,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color.fromARGB(255, 82, 49, 31),
+                  offset: Offset(0, 4),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -141,7 +170,7 @@ class _AddNewRewardState extends State<AddNewReward> {
 
                     // Behavior Description
                     const Text(
-                      "NAME:",
+                      "Name:",
                       style: TextStyle(
                         color: Color.fromARGB(255, 116, 79, 64),
                         fontSize: 17,
@@ -149,7 +178,7 @@ class _AddNewRewardState extends State<AddNewReward> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
-                      controller: _behaviorController,
+                      controller: _nameController,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -160,6 +189,32 @@ class _AddNewRewardState extends State<AddNewReward> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please describe Name Reward';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      "Description:",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 116, 79, 64),
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _descriptionController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        labelText: "Example: Special sneaker \nfrom adidas",
+                        errorStyle: const TextStyle(color: Colors.red),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please provide a description';
                         }
                         return null;
                       },
@@ -176,7 +231,7 @@ class _AddNewRewardState extends State<AddNewReward> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
-                      controller: _behaviorController,
+                      controller: _quantityController,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -193,7 +248,7 @@ class _AddNewRewardState extends State<AddNewReward> {
                     ),
                     const SizedBox(height: 15),
                     const Text(
-                      "TOTAL POINT:",
+                      "Total point:",
                       style: TextStyle(
                         color: Color.fromARGB(255, 116, 79, 64),
                         fontSize: 17,
@@ -201,7 +256,7 @@ class _AddNewRewardState extends State<AddNewReward> {
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
-                      controller: _behaviorController,
+                      controller: _pointController,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -219,7 +274,7 @@ class _AddNewRewardState extends State<AddNewReward> {
                     const SizedBox(height: 15),
                     // Image Upload
                     const Text(
-                      "Upload your picture to prove",
+                      "Upload rewards image",
                       style: TextStyle(
                         color: Color.fromARGB(255, 116, 79, 64),
                         fontSize: 17,
@@ -348,6 +403,7 @@ class _AddNewRewardState extends State<AddNewReward> {
           ),
         ),
       ),
+
       bottomNavigationBar: BottomNavBar(
         selectedIndex: null,
         onItemTapped: null,
