@@ -3,7 +3,7 @@ import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/behavior_model.dart';
-
+import 'package:clean_energy_rewards/pages/admin-side/Approve_Behavior.dart';
 
 class Checkuserbehavior extends StatefulWidget {
   @override
@@ -16,7 +16,6 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
   List<BehaviorModel> filteredBehavior = [];
   TextEditingController searchController = TextEditingController();
   String? statusFilter;
-
 
   @override
   void initState() {
@@ -36,7 +35,6 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
       _selectedIndex = index;
     });
   }
-
 
   void _resetFilters() {
     setState(() {
@@ -210,7 +208,12 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                                                       Row(
                                                         children: [
                                                           IconButton(
-                                                            onPressed: () {},
+                                                            onPressed: () {
+                                                              Navigator.pushNamed(
+                                                                context,
+                                                                '/Approve',
+                                                              );
+                                                            },
                                                             icon: Icon(
                                                               Icons.edit,
                                                               size: 18,
