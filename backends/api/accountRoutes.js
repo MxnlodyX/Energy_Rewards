@@ -49,32 +49,50 @@ router.post("/register", upload.single("image"), async (req, res) => {
 });
 router.post("/adminRegis", async (req, res) => {
     try {
-        const { admin_email, admin_password } = req.body;
+        const {
+            admin_firstname,
+            admin_lastname,
+            admin_email,
+            admin_password,
+            admin_tel
+        } = req.body;
 
-        if (!admin_email || !admin_password) {
+        // Check required fields
+        if (!admin_firstname || !admin_lastname || !admin_email || !admin_password) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
-        const [checkUser] = await db.query("SELECT * FROM userAccount WHERE email = ?", [admin_email]);
-        if (checkUser.length > 0) {
-            return res.status(409).json({ error: "Email already used" });
+        // Check for duplicate email
+        const [checkAdmin] = await db.query(
+            "SELECT * FROM administrator WHERE admin_email = ?",
+            [admin_email]
+        );
+
+        if (checkAdmin.length > 0) {
+            return res.status(409).json({ error: "Email already in use" });
         }
 
+        // Hash the password
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(admin_password, saltRounds);
 
+        // Insert new administrator
         const [result] = await db.query(
-            "INSERT INTO administrator (admin_email, admin_password) VALUES (?, ?)",
-            [admin_email, hashedPassword]
+            `INSERT INTO administrator 
+             (admin_firstname, admin_lastname, admin_email, admin_password, admin_tel) 
+             VALUES (?, ?, ?, ?, ?)`,
+            [admin_firstname, admin_lastname, admin_email, hashedPassword, admin_tel]
         );
 
         res.status(201).json({
-            message: "User registered successfully",
-            userId: result.insertId
+            success: true,
+            message: "Administrator registered successfully",
+            admin_id: result.insertId
         });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to register user" });
+        console.error("Registration error:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 router.get("/getInfo/:user_id", async (req, res) => {

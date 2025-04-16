@@ -21,6 +21,11 @@ import 'package:clean_energy_rewards/pages/user-side/detail_reward.dart';
 
 //admin-side
 import 'package:clean_energy_rewards/pages/admin-side/admin_homepage.dart';
+import 'package:clean_energy_rewards/pages/admin-side/CheckUserBehavior.dart';
+import 'package:clean_energy_rewards/pages/admin-side/confirm_behavior.dart';
+import 'package:clean_energy_rewards/pages/admin-side/Rewardmanagement.dart';
+import 'package:clean_energy_rewards/pages/admin-side/add_new_reward.dart';
+import 'package:clean_energy_rewards/pages/admin-side/edit_reward.dart';
 
 void main() async {
   runApp(CleanEnergy());
@@ -39,6 +44,7 @@ class CleanEnergy extends StatelessWidget {
         '/LoginPage': (context) => LoginPage(),
         '/AdminLoginPage': (context) => AddminLoginPage(),
         '/register_page': (context) => RegisterPage(),
+
         //userSide
         '/userhomePage': (context) => userHomepage(),
         '/userBehaviorPage': (context) => UserBehavior(),
@@ -46,12 +52,19 @@ class CleanEnergy extends StatelessWidget {
         '/userInfo': (context) => UserInfo(),
         '/howtousePage': (context) => howToUse(),
         '/rewardHistory': (context) => RewardHistory(),
+
         //userActionPage
         '/addNewBehavior': (context) => addBehavior(),
         '/editBehavior': (context) => EditBehavior(),
         '/detailReward': (context) => DetailReward(),
+
         //adminSide
         '/Dashboard': (context) => AdminHomepage(),
+        '/allUserBehavior': (context) => Checkuserbehavior(),
+        '/confirmBehavior': (context) => ConfirmBehavior(),
+        '/allRewards': (context) => Rewardmanagement(),
+        '/addRewards': (context) => AddNewReward(),
+        '/editRewards': (context) => EditReward(),
       },
     );
   }

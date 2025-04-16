@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/admin-side/add_new_reward.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/reward_model.dart';
+import 'package:http/http.dart' as http;
 
 class Rewardmanagement extends StatefulWidget {
   @override
@@ -14,8 +17,34 @@ class _RewardmanagementState extends State<Rewardmanagement> {
   int _selectedIndex = 2;
   List<RewardModel> rewards = [];
 
-  void _getRewards() {
-    setState(() {});
+  @override
+  void initState() {
+    super.initState();
+    _getRewards();
+  }
+
+  Future<void> _getRewards() async {
+    final url = "http://192.168.56.1:4001/api/get_rewards";
+    try {
+      var response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        final List<dynamic> data = decoded['data'];
+        setState(() {
+          rewards = data.map((json) => RewardModel.fromJson(json)).toList();
+        });
+      } else {
+        print("Failed to load rewards: ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Error fetching rewards: $error");
+    }
   }
 
   void _onItemTapped(int index) {
@@ -24,10 +53,42 @@ class _RewardmanagementState extends State<Rewardmanagement> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _getRewards();
+  Future<void> _deleteReward(String behaviorId) async {
+    final url = "http://192.168.56.1:4001/api/delete_reward/$behaviorId";
+
+    try {
+      final response = await http.delete(Uri.parse(url));
+      if (response.statusCode == 200) {
+        _showDeleteSnackBar(context);
+        _getRewards();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Delete failed: ${response.body}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting behavior: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _showDeleteSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Delete successfully!'),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromARGB(255, 142, 180, 134),
+      ),
+    );
   }
 
   @override
@@ -40,50 +101,42 @@ class _RewardmanagementState extends State<Rewardmanagement> {
           return SingleChildScrollView(
             child: Center(
               child: Container(
-                padding: EdgeInsets.only(left: 15, right: 15),
+                padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "REWARD",
+                          "All Reward total ${rewards.length} piece",
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 82, 49, 31),
                           ),
                         ),
-                        Row(
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddNewReward(),
-                                  ),
-                                );
-                              },
-                              style: IconButton.styleFrom(
-                                backgroundColor: const Color.fromARGB(
-                                  224,
-                                  82,
-                                  49,
-                                  31,
-                                ),
-                                padding: const EdgeInsets.all(10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddNewReward(),
                               ),
-                              icon: Icon(
-                                Icons.add,
-                                size: 20,
-                                color: Colors.white,
-                              ),
+                            );
+                          },
+                          style: IconButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              224,
+                              82,
+                              49,
+                              31,
                             ),
-                          ],
+                            padding: const EdgeInsets.all(10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: Icon(Icons.add, size: 20, color: Colors.white),
                         ),
                       ],
                     ),
@@ -99,7 +152,7 @@ class _RewardmanagementState extends State<Rewardmanagement> {
                             ),
                             SizedBox(height: 16),
                             Text(
-                              'No matching behaviors found',
+                              'No rewards found',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey,
@@ -124,69 +177,148 @@ class _RewardmanagementState extends State<Rewardmanagement> {
                                   onTap: () {},
                                   child: Padding(
                                     padding: EdgeInsets.all(16),
-                                    child: Column(
+                                    child: Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              width: 60,
-                                              height: 60,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                image: DecorationImage(
-                                                  image: AssetImage(
-                                                    item.iconPath,
-                                                  ),
-                                                  fit: BoxFit.cover,
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          child: Image.network(
+                                            item.iconPath,
+                                            width: 80,
+                                            height: 80,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+
+                                        SizedBox(width: 15),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                item.name,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                            ),
-                                            SizedBox(width: 15),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+
+                                              SizedBox(height: 4),
+
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
                                                 children: [
-                                                  Text(
-                                                    item.name,
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 4),
-                                                  Text(
-                                                    'Date: ${item.name}',
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      color:
-                                                          const Color.fromARGB(
+                                                  Row(
+                                                    children: [
+                                                      Container(
+                                                        padding: EdgeInsets.all(
+                                                          4,
+                                                        ),
+
+                                                        child: Image.asset(
+                                                          'assets/Energy_Coin.png',
+                                                          width: 20,
+                                                          height: 20,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 6),
+                                                      Text(
+                                                        "${item.total_point} points",
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          color: Color.fromARGB(
                                                             255,
-                                                            27,
-                                                            23,
-                                                            23,
+                                                            82,
+                                                            49,
+                                                            31,
                                                           ),
-                                                    ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                   Row(
                                                     children: [
                                                       IconButton(
-                                                        onPressed: () {},
+                                                        onPressed: () {
+                                                          Navigator.pushNamed(
+                                                            context,
+                                                            '/editRewards',
+                                                            arguments: {
+                                                              'reward_id':
+                                                                  item.id
+                                                                      .toString(),
+                                                            },
+                                                          );
+                                                        },
                                                         icon: Icon(
                                                           Icons.edit,
                                                           size: 18,
+                                                          color: Colors.blue,
                                                         ),
                                                         padding:
                                                             EdgeInsets.zero,
                                                         constraints:
                                                             BoxConstraints(),
-                                                        iconSize: 18,
-                                                        color: Colors.blue,
                                                       ),
                                                       IconButton(
-                                                        onPressed: () {},
+                                                        onPressed: () {
+                                                          showDialog(
+                                                            context: context,
+                                                            builder: (
+                                                              BuildContext
+                                                              context,
+                                                            ) {
+                                                              return AlertDialog(
+                                                                title: Text(
+                                                                  "Confirm Delete",
+                                                                ),
+
+                                                                actions: [
+                                                                  TextButton(
+                                                                    onPressed:
+                                                                        () => Navigator.pop(
+                                                                          context,
+                                                                        ),
+                                                                    child: Text(
+                                                                      "Cancel",
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  TextButton(
+                                                                    onPressed: () async {
+                                                                      Navigator.pop(
+                                                                        context,
+                                                                      );
+                                                                      await _deleteReward(
+                                                                        item.id
+                                                                            .toString(),
+                                                                      );
+                                                                    },
+
+                                                                    child: Text(
+                                                                      "Confirm",
+                                                                      style: TextStyle(
+                                                                        color: Color.fromARGB(
+                                                                          255,
+                                                                          248,
+                                                                          71,
+                                                                          71,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              );
+                                                            },
+                                                          );
+                                                        },
                                                         icon: Icon(
                                                           Icons.delete,
                                                           size: 18,
@@ -202,8 +334,8 @@ class _RewardmanagementState extends State<Rewardmanagement> {
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),

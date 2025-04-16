@@ -1,22 +1,19 @@
-import 'dart:convert';
-
-import 'package:clean_energy_rewards/pages/admin-side/Rewardmanagement.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'dart:io';
-
-import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
-import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
+import 'dart:convert';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
+import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
+import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:clean_energy_rewards/pages/admin-side/Rewardmanagement.dart';
 
-class AddNewReward extends StatefulWidget {
+class EditReward extends StatefulWidget {
   @override
-  State<AddNewReward> createState() => _AddNewRewardState();
+  State<EditReward> createState() => _EditRewardState();
 }
 
-class _AddNewRewardState extends State<AddNewReward> {
+class _EditRewardState extends State<EditReward> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -26,10 +23,19 @@ class _AddNewRewardState extends State<AddNewReward> {
   File? _imageFile;
   bool _isSubmitting = false;
   bool _isPickerActive = false;
+  String? _rewardID;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    _rewardID = args['reward_id']?.toString();
+  }
 
   Future<void> _pickImage() async {
     if (_isPickerActive) return;
-
     setState(() => _isPickerActive = true);
 
     try {
@@ -58,49 +64,57 @@ class _AddNewRewardState extends State<AddNewReward> {
     _quantityController.dispose();
     _pointController.dispose();
     _descriptionController.dispose();
-
     super.dispose();
   }
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_imageFile == null) {
+    if (_rewardID == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Please upload an image')));
+      ).showSnackBar(const SnackBar(content: Text('Missing reward ID')));
       return;
     }
 
     setState(() => _isSubmitting = true);
 
-    final uri = Uri.parse('http://192.168.56.1:4001/api/add_rewards');
-    final request = http.MultipartRequest('POST', uri);
+    final uri = Uri.parse(
+      'http://192.168.56.1:4001/api/update_reward/$_rewardID',
+    );
+    final request = http.MultipartRequest('PUT', uri);
 
     request.fields['reward_name'] = _nameController.text;
     request.fields['description'] = _descriptionController.text;
     request.fields['exchange_point'] = _pointController.text;
     request.fields['quantity'] = _quantityController.text;
 
-    request.files.add(
-      await http.MultipartFile.fromPath('image', _imageFile!.path),
-    );
+    if (_imageFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath('image', _imageFile!.path),
+      );
+    }
 
     try {
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      final resJson = json.decode(response.body);
 
-      if (response.statusCode == 201) {
-        _showSuccessSnackbar();
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reward updated successfully!')),
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Rewardmanagement()),
         );
       } else {
-        final jsonResponse = json.decode(response.body);
-        final errorMessage = jsonResponse['message'] ?? 'Unknown error';
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add reward: $errorMessage')),
+          SnackBar(
+            content: Text(
+              'Failed to update: ${resJson['message'] ?? 'Unknown error'}',
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -110,18 +124,6 @@ class _AddNewRewardState extends State<AddNewReward> {
     } finally {
       setState(() => _isSubmitting = false);
     }
-  }
-
-  void _showSuccessSnackbar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Add New rewards Successfully!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: Color.fromARGB(255, 142, 180, 134),
-      ),
-    );
   }
 
   @override
@@ -159,7 +161,7 @@ class _AddNewRewardState extends State<AddNewReward> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "Add New Reward",
+                      "Edit Reward",
                       style: TextStyle(
                         color: Color.fromARGB(255, 116, 79, 64),
                         fontSize: 25,
@@ -392,7 +394,7 @@ class _AddNewRewardState extends State<AddNewReward> {
                                   ? const CircularProgressIndicator(
                                     color: Colors.white,
                                   )
-                                  : const Text('Submit'),
+                                  : const Text('Update'),
                         ),
                       ],
                     ),
@@ -403,10 +405,35 @@ class _AddNewRewardState extends State<AddNewReward> {
           ),
         ),
       ),
-
       bottomNavigationBar: BottomNavBar(
         selectedIndex: null,
         onItemTapped: null,
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter $label';
+          }
+          return null;
+        },
       ),
     );
   }

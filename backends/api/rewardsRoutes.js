@@ -14,53 +14,21 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage
 });
-router.put("/update_reward/:id", upload.single("image"), async (req, res) => {
-    try {
-        const reward_id = req.params.id;
-        const { reward_name, description, exchange_point } = req.body;
-        const imagePath = req.file ? req.file.path : null;
-        let values
-        if (imagePath) {
-            values = [reward_name, description, exchange_point, imagePath, reward_id];
-            const [result] = await db.query(
-                "UPDATE rewards SET reward_name = ?, description = ?, exchange_point = ?, image_path = ? WHERE reward_id = ?",
-                [reward_name, description, exchange_point, imagePath, reward_id]
-            );
-        } else {
-            values = [reward_name, description, exchange_point, reward_id];
-            const [result] = await db.query(
-                "UPDATE rewards SET reward_name = ?, description = ?, exchange_point = ? WHERE reward_id = ?",
-                [reward_name, description, exchange_point, reward_id]
-            );
-        }
 
-        res.status(200).json({
-            success: true,
-            message: "update rewards successfully",
-        })
-
-    } catch (error) {
-        console.error("Database Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Error Update Rewards",
-            error: error.message
-        });
-    }
-})
 router.post("/add_rewards", upload.single("image"), async (req, res) => {
     try {
-        const { reward_name, description, exchange_point } = req.body;
+        const { reward_name, description, exchange_point, quantity } = req.body;
         const imagePath = req.file ? req.file.path : null;
-        if (!reward_name || !description || !exchange_point) {
+
+        if (!reward_name || !description || !exchange_point || !quantity) {
             return res.status(400).json({
                 success: false,
-                message: "Missing required fields (reward_name, description, exchange_point)"
+                message: "Missing required fields (reward_name, description, exchange_point, quantity)"
             });
         }
         const [result] = await db.query(
-            "INSERT INTO rewards(reward_name, description, image_path, exchange_point) VALUES(?,?,?,?)",
-            [reward_name, description, imagePath, exchange_point]
+            "INSERT INTO rewards(reward_name, description, image_path, exchange_point, quantity) VALUES(?,?,?,?,?)",
+            [reward_name, description, imagePath, exchange_point, quantity]
 
         );
         res.status(201).json({
@@ -78,11 +46,39 @@ router.post("/add_rewards", upload.single("image"), async (req, res) => {
         });
     }
 });
+router.put("/update_reward/:id", upload.single("image"), async (req, res) => {
+    try {
+        const reward_id = req.params.id;
+        const { reward_name, description, exchange_point, quantity } = req.body;
+        const imagePath = req.file ? req.file.path : null;
+        let values
 
+        values = [reward_name, description, exchange_point, imagePath, quantity, reward_id];
+        const [result] = await db.query(
+            "UPDATE rewards SET reward_name = ?, description = ?, exchange_point = ?, image_path = ? , quantity = ? WHERE reward_id = ?", values
+        );
+        console.log("body:", req.body);
+        console.log("file:", req.file);
+
+        res.status(200).json({
+            success: true,
+            message: "update rewards successfully",
+            result: result
+        })
+
+    } catch (error) {
+        console.error("Database Error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error Update Rewards",
+            error: error.message
+        });
+    }
+})
 router.get("/get_rewards", async (req, res) => {
     try {
         const [result] = await db.query("SELECT * FROM rewards ORDER BY reward_id DESC")
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: "Get all rewards",
             data: result
