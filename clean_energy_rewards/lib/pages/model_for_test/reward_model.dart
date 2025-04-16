@@ -1,51 +1,31 @@
-
 class RewardModel {
+  int id;
   String name;
+  String description;
   String iconPath;
   int total_point;
+  String? exchangeDate; // <- เพิ่มตรงนี้
+
   RewardModel({
+    required this.id,
     required this.name,
+    required this.description,
     required this.iconPath,
     required this.total_point,
+    this.exchangeDate,
   });
 
-  static List<RewardModel> getRewards() {
-    List<RewardModel> rewards = [];
-    rewards.add(
-      RewardModel(
-        name: 'Sneaker',
-        iconPath: 'assets/gucci.jpg',
-        total_point: 2000,
-      ),
+  factory RewardModel.fromJson(Map<String, dynamic> json) {
+    final rawPath = json['image_path'] ?? '';
+    final formattedPath = rawPath.replaceAll('\\', '/');
+
+    return RewardModel(
+      id: json['reward_id'], // ใช้เป็น int โดยตรง
+      name: json['reward_name'] ?? '',
+      description: json['description'] ?? '',
+      iconPath: 'http://192.168.56.1:4001/$formattedPath',
+      total_point: json['exchange_point'] ?? 0,
+      exchangeDate: json['exchange_on'] ?? '',
     );
-    rewards.add(
-      RewardModel(
-        name: 'Adidas T-shirt',
-        iconPath: 'assets/Adidas_t-shirt.avif',
-        total_point: 2000,
-      ),
-    );
-    rewards.add(
-      RewardModel(
-        name: 'The Toth Bag',
-        iconPath: 'assets/bag.jpg',
-        total_point: 2000,
-      ),
-    );
-    rewards.add(
-      RewardModel(
-        name: 'Yeti ',
-        iconPath: 'assets/yeti.jpg',
-        total_point: 2000,
-      ),
-    );
-    rewards.add(
-      RewardModel(
-        name: 'Yeti v2 ',
-        iconPath: 'assets/yeti.jpg',
-        total_point: 2000,
-      ),
-    );
-    return rewards;
   }
 }
