@@ -1,9 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/behavior_model.dart';
-
+import 'package:http/http.dart' as http;
 
 class Checkuserbehavior extends StatefulWidget {
   @override
@@ -16,18 +18,12 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
   List<BehaviorModel> filteredBehavior = [];
   TextEditingController searchController = TextEditingController();
   String? statusFilter;
-
+  bool _isSearchExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    _getBehavior();
-  }
-
-  void _getBehavior() {
-    setState(() {
-      filteredBehavior = behavior;
-    });
+    _getUserBehavior();
   }
 
   void _onItemTapped(int index) {
@@ -36,6 +32,22 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
     });
   }
 
+  void _filterBehaviors() {
+    setState(() {
+      filteredBehavior =
+          behavior.where((item) {
+            final matchesSearch = item.name.toLowerCase().contains(
+              searchController.text.toLowerCase(),
+            );
+
+            final matchesStatus =
+                statusFilter == null ||
+                item.status.toLowerCase() == statusFilter!.toLowerCase();
+
+            return matchesSearch && matchesStatus;
+          }).toList();
+    });
+  }
 
   void _resetFilters() {
     setState(() {
@@ -43,6 +55,57 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
       statusFilter = null;
       filteredBehavior = behavior;
     });
+  }
+
+  Future<void> _getUserBehavior() async {
+    final url = "http://192.168.56.1:4001/api/get_all_behavior";
+    try {
+      var response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        final List<dynamic> data = decoded['data'];
+        setState(() {
+          behavior = data.map((json) => BehaviorModel.fromJson(json)).toList();
+          filteredBehavior = behavior;
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Exception caught: $error");
+    }
+  }
+
+  Future<void> _deleteBehavior(String behaviorId) async {
+    final url = "http://192.168.56.1:4001/api/delete_behavior/$behaviorId";
+
+    try {
+      final response = await http.delete(Uri.parse(url));
+      if (response.statusCode == 200) {
+        _showDeleteSnackBar(context);
+        _getUserBehavior();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Delete failed: ${response.body}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting behavior: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Color _getStatusColor(String status) {
@@ -75,16 +138,106 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "User Behavior",
+                          "Your Behavior History",
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 82, 49, 31),
                           ),
                         ),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                _isSearchExpanded ? Icons.close : Icons.search,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isSearchExpanded = !_isSearchExpanded;
+                                  if (!_isSearchExpanded) {
+                                    _resetFilters();
+                                  }
+                                });
+                              },
+                            ),
+                            SizedBox(width: 8),
+                          ],
+                        ),
                       ],
                     ),
-                    // Behavior Cards
+                    if (_isSearchExpanded) ...[
+                      SizedBox(height: 16),
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        child: Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                TextField(
+                                  controller: searchController,
+                                  decoration: InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Color.fromARGB(
+                                          255,
+                                          142,
+                                          180,
+                                          134,
+                                        ),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    prefixIcon: Icon(Icons.search),
+                                    hintText: 'Search by name...',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      vertical: 12,
+                                      horizontal: 16,
+                                    ),
+                                    suffixIcon:
+                                        searchController.text.isNotEmpty
+                                            ? IconButton(
+                                              icon: Icon(Icons.clear),
+                                              onPressed: () {
+                                                searchController.clear();
+                                                _filterBehaviors();
+                                              },
+                                            )
+                                            : null,
+                                  ),
+                                  onChanged: (value) => _filterBehaviors(),
+                                ),
+                                SizedBox(height: 12),
+
+                                SizedBox(height: 8),
+                                if (searchController.text.isNotEmpty ||
+                                    statusFilter != null)
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton(
+                                      onPressed: _resetFilters,
+                                      child: Text(
+                                        'Reset Filters',
+                                        style: TextStyle(color: Colors.blue),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    SizedBox(height: 16),
                     if (filteredBehavior.isEmpty)
                       Padding(
                         padding: EdgeInsets.all(32),
@@ -135,13 +288,11 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                                             Container(
                                               width: 60,
                                               height: 60,
-                                              decoration: BoxDecoration(
+                                              child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
-                                                image: DecorationImage(
-                                                  image: AssetImage(
-                                                    item.iconPath,
-                                                  ),
+                                                child: Image.network(
+                                                  item.iconPath,
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -152,6 +303,7 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
+                                                  SizedBox(height: 4),
                                                   Text(
                                                     item.name,
                                                     style: TextStyle(
@@ -174,6 +326,36 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                                                           ),
                                                     ),
                                                   ),
+                                                  if (item.status
+                                                          .toLowerCase() ==
+                                                      'success') ...[
+                                                    SizedBox(height: 4),
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.star,
+                                                          size: 16,
+                                                          color: Colors.amber,
+                                                        ),
+                                                        SizedBox(width: 4),
+                                                        Text(
+                                                          'Earned ${item.total_point} points',
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color:
+                                                                Color.fromARGB(
+                                                                  255,
+                                                                  59,
+                                                                  101,
+                                                                  34,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                   Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -209,7 +391,16 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                                                       Row(
                                                         children: [
                                                           IconButton(
-                                                            onPressed: () {},
+                                                            onPressed: () {
+                                                              Navigator.pushNamed(
+                                                                context,
+                                                                '/confirmBehavior',
+                                                                arguments: {
+                                                                  'behavior_id':
+                                                                      item.id,
+                                                                },
+                                                              );
+                                                            },
                                                             icon: Icon(
                                                               Icons.edit,
                                                               size: 18,
@@ -220,19 +411,6 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                                                                 BoxConstraints(),
                                                             iconSize: 18,
                                                             color: Colors.blue,
-                                                          ),
-                                                          IconButton(
-                                                            onPressed: () {},
-                                                            icon: Icon(
-                                                              Icons.delete,
-                                                              size: 18,
-                                                            ),
-                                                            padding:
-                                                                EdgeInsets.zero,
-                                                            constraints:
-                                                                BoxConstraints(),
-                                                            iconSize: 18,
-                                                            color: Colors.red,
                                                           ),
                                                         ],
                                                       ),
@@ -263,4 +441,16 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
       ),
     );
   }
+}
+
+void _showDeleteSnackBar(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Delete successfully!'),
+      duration: Duration(seconds: 2),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      backgroundColor: Color.fromARGB(255, 142, 180, 134),
+    ),
+  );
 }
