@@ -1,4 +1,3 @@
-import 'package:clean_energy_rewards/pages/model_for_test/behavior_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -20,7 +19,6 @@ class _EditBehaviorState extends State<EditBehavior> {
   final TextEditingController _behaviorController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   File? _imageFile;
-  bool _isSubmitting = false;
   bool _isPickerActive = false;
   String? _behaviorId;
 
@@ -91,8 +89,6 @@ class _EditBehaviorState extends State<EditBehavior> {
       return;
     }
 
-    setState(() => _isSubmitting = true);
-
     try {
       var url = "http://192.168.56.1:4001/api/edit_behavior/$_behaviorId";
       var request = http.MultipartRequest('PUT', Uri.parse(url));
@@ -130,9 +126,7 @@ class _EditBehaviorState extends State<EditBehavior> {
           backgroundColor: Colors.red,
         ),
       );
-    } finally {
-      setState(() => _isSubmitting = false);
-    }
+    } finally {}
   }
 
   @override
