@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'package:clean_energy_rewards/pages/model_for_test/reward_model.dart';
 import 'package:clean_energy_rewards/pages/components/sideBar.dart';
-import 'package:clean_energy_rewards/pages/components/navBar.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 
 class DetailReward extends StatefulWidget {
@@ -12,6 +15,72 @@ class DetailReward extends StatefulWidget {
 }
 
 class _DetailRewardState extends State<DetailReward> {
+  Future<String?> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
+  Future<void> exchangeReward(int rewardId) async {
+    final userId = await getUserId();
+    final url = Uri.parse(
+      'http://192.168.56.1:4001/api/exchange_reward/$rewardId',
+    );
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'user_id': userId.toString()}),
+      );
+
+      final jsonResponse = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        _showExchangeSuccessSnackbar();
+        Navigator.pop(context, true);
+      } else if (response.statusCode == 400) {
+        _pointNotEnoughtSnackbar();
+        Navigator.pop(context, false);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(jsonResponse['message']),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      print('Error: $error');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Server error occurred')));
+    }
+  }
+
+  void _showExchangeSuccessSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Exchange Successfully!'),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromARGB(255, 142, 180, 134),
+      ),
+    );
+  }
+
+  void _pointNotEnoughtSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Not enough points to exchange reward!'),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromARGB(255, 247, 134, 81),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final reward = ModalRoute.of(context)!.settings.arguments as RewardModel;
@@ -25,7 +94,6 @@ class _DetailRewardState extends State<DetailReward> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Reward Image with Card and Shadow
               Center(
                 child: Container(
                   margin: const EdgeInsets.only(top: 24, bottom: 16),
@@ -42,7 +110,7 @@ class _DetailRewardState extends State<DetailReward> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
+                    child: Image.network(
                       reward.iconPath,
                       height: 220,
                       fit: BoxFit.contain,
@@ -170,10 +238,10 @@ class _DetailRewardState extends State<DetailReward> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close dialog
-                _showExchangeSuccessSnackbar(context);
-                Navigator.pop(context); // Go back to previous screen
+                Navigator.pop(context);
+                exchangeReward(reward.id);
               },
+
               child: Text(
                 "Confirm",
                 style: TextStyle(color: Color.fromARGB(255, 142, 180, 134)),
@@ -182,18 +250,6 @@ class _DetailRewardState extends State<DetailReward> {
           ],
         );
       },
-    );
-  }
-
-  void _showExchangeSuccessSnackbar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Reward exchanged successfully!'),
-        duration: Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: Color.fromARGB(255, 142, 180, 134),
-      ),
     );
   }
 }

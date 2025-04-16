@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/components/navBar.dart';
 import 'package:clean_energy_rewards/pages/components/sideBar.dart';
 import 'package:clean_energy_rewards/pages/user-side/user_behavior.dart';
+
 class addBehavior extends StatefulWidget {
   @override
   State<addBehavior> createState() => _addBehaviorState();
@@ -43,43 +47,87 @@ class _addBehaviorState extends State<addBehavior> {
     try {
       final pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
-        maxWidth: 1800,
-        maxHeight: 1800,
-        imageQuality: 85,
       );
-
       if (pickedFile != null) {
-        setState(() => _imageFile = File(pickedFile.path));
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to pick image: ${e.toString()}')),
+        SnackBar(
+          content: Text('Failed to pick image: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     } finally {
       setState(() => _isPickerActive = false);
     }
   }
 
-  void _submitForm() {
+  void _showSuccessSnackbar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Add New Behavior Successfully!'),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Color.fromARGB(255, 142, 180, 134),
+      ),
+    );
+  }
+
+  Future<String?> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
+  Future<void> _addBehavior() async {
     if (!_formKey.currentState!.validate()) return;
     if (_imageFile == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Please upload an image')));
+      ).showSnackBar(const SnackBar(content: Text('Please upload an image')));
       return;
     }
 
     setState(() => _isSubmitting = true);
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() => _isSubmitting = false);
+
+    try {
+      const url = "http://192.168.56.1:4001/api/add_behavior";
+      String? userId = await getUserId();
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+      request.fields['behavior_description'] = _behaviorController.text;
+      request.fields['behavior_date'] = _dateController.text;
+      request.fields['user_id'] = userId ?? '';
+      request.files.add(
+        await http.MultipartFile.fromPath('image', _imageFile!.path),
+      );
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+      final jsonResponse = json.decode(response.body);
+
+      if (response.statusCode == 201) {
+        _showSuccessSnackbar();
+        Navigator.pushNamed(context, "/userBehaviorPage");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(jsonResponse['message'] ?? 'Add behavior failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Behavior recorded successfully!')),
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => UserBehavior()),
-      );
-    });
+    } finally {
+      setState(() => _isSubmitting = false);
+    }
   }
 
   @override
@@ -162,8 +210,6 @@ class _addBehaviorState extends State<addBehavior> {
                       },
                     ),
                     const SizedBox(height: 15),
-
-                    // Date Picker
                     const Text(
                       "On which date?",
                       style: TextStyle(
@@ -192,7 +238,6 @@ class _addBehaviorState extends State<addBehavior> {
                     ),
                     const SizedBox(height: 15),
 
-                    // Image Upload
                     const Text(
                       "Upload your picture to prove",
                       style: TextStyle(
@@ -306,7 +351,7 @@ class _addBehaviorState extends State<addBehavior> {
                             ),
                             foregroundColor: Colors.white,
                           ),
-                          onPressed: _isSubmitting ? null : _submitForm,
+                          onPressed: _addBehavior,
                           child:
                               _isSubmitting
                                   ? const CircularProgressIndicator(

@@ -48,7 +48,6 @@ class _LoginPageState extends State<LoginPage> {
         final data = json.decode(response.body);
         final user_id = data['user_id'];
 
-        // เก็บ user_id ลง SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_id', user_id.toString());
       } else {
