@@ -18,7 +18,6 @@ import 'package:clean_energy_rewards/pages/user-side/reward_history.dart';
 import 'package:clean_energy_rewards/pages/user-side/add_new_beh.dart';
 import 'package:clean_energy_rewards/pages/user-side/edit_beh.dart';
 import 'package:clean_energy_rewards/pages/user-side/detail_reward.dart';
-import 'package:clean_energy_rewards/pages/user-side/edit_user_info.dart';
 
 //admin-side
 import 'package:clean_energy_rewards/pages/admin-side/admin_homepage.dart';
@@ -51,7 +50,6 @@ class CleanEnergy extends StatelessWidget {
         '/addNewBehavior': (context) => addBehavior(),
         '/editBehavior': (context) => EditBehavior(),
         '/detailReward': (context) => DetailReward(),
-        '/editUserInfo': (context) => EditUserInfo(),
         //adminSide
         '/Dashboard': (context) => AdminHomepage(),
       },
