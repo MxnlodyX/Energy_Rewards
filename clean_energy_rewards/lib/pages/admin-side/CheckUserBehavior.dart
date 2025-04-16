@@ -26,7 +26,6 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
 
   void _getBehavior() {
     setState(() {
-      behavior = BehaviorModel.getBehaviors();
       filteredBehavior = behavior;
     });
   }

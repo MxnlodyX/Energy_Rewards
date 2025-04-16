@@ -15,7 +15,6 @@ class _RewardmanagementState extends State<Rewardmanagement> {
   List<RewardModel> rewards = [];
 
   void _getRewards() {
-    rewards = RewardModel.getRewards();
     setState(() {});
   }
 
