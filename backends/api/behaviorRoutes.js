@@ -171,6 +171,20 @@ router.delete("/delete_behavior/:behavior_id", async (req, res) => {
     }
 });
 
+router.get("/get_all_behavior", async (req, res) => {
+    try {
+        const [result] = await db.query(`SELECT * from user_behavior WHERE behavior_status = "pending"`);
+        res.status(200).json({
+            success: true,
+            data: result
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error get behavior"
+        });
+    }
+});
 router.put("/verify_behavior/:behavior_id", async (req, res) => {
     try {
         const { behavior_id } = req.params;
