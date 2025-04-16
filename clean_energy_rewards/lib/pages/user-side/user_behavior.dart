@@ -97,7 +97,7 @@ class _UserBehaviorState extends State<UserBehavior> {
     try {
       final response = await http.delete(Uri.parse(url));
       if (response.statusCode == 200) {
-        _showExchangeSuccessSnackbar(context);
+        _showDeleteSnackBar(context);
         _getUserBehavior();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -628,7 +628,7 @@ class _UserBehaviorState extends State<UserBehavior> {
   }
 }
 
-void _showExchangeSuccessSnackbar(BuildContext context) {
+void _showDeleteSnackBar(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text('Delete successfully!'),
