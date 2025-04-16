@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'package:clean_energy_rewards/pages/components/sideBar.dart';
 import 'package:clean_energy_rewards/pages/components/navBar.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
@@ -21,14 +25,7 @@ class _UserBehaviorState extends State<UserBehavior> {
   @override
   void initState() {
     super.initState();
-    _getBehavior();
-  }
-
-  void _getBehavior() {
-    setState(() {
-      behavior = BehaviorModel.getBehaviors();
-      filteredBehavior = behavior;
-    });
+    _getUserBehavior();
   }
 
   void _onItemTapped(int index) {
@@ -61,6 +58,63 @@ class _UserBehaviorState extends State<UserBehavior> {
       filteredBehavior = behavior;
       _isSearchExpanded = false;
     });
+  }
+
+  Future<String?> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
+  Future<void> _getUserBehavior() async {
+    String? id = await getUserId();
+    final url = "http://192.168.56.1:4001/api/get_behavior/$id";
+    try {
+      var response = await http.get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        final List<dynamic> data = decoded['data'];
+        setState(() {
+          behavior = data.map((json) => BehaviorModel.fromJson(json)).toList();
+          filteredBehavior = behavior;
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (error) {
+      print("Exception caught: $error");
+    }
+  }
+
+  Future<void> _deleteBehavior(String behaviorId) async {
+    final url = "http://192.168.56.1:4001/api/delete_behavior/$behaviorId";
+
+    try {
+      final response = await http.delete(Uri.parse(url));
+      if (response.statusCode == 200) {
+        _showExchangeSuccessSnackbar(context);
+        _getUserBehavior();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Delete failed: ${response.body}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error deleting behavior: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Color _getStatusColor(String status) {
@@ -189,7 +243,6 @@ class _UserBehaviorState extends State<UserBehavior> {
                                 ),
                                 SizedBox(height: 12),
 
-                                // Status Filter Chips (More mobile-friendly than dropdown)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -304,8 +357,6 @@ class _UserBehaviorState extends State<UserBehavior> {
                       ),
                     ],
                     SizedBox(height: 16),
-
-                    // Behavior Cards
                     if (filteredBehavior.isEmpty)
                       Padding(
                         padding: EdgeInsets.all(32),
@@ -356,13 +407,11 @@ class _UserBehaviorState extends State<UserBehavior> {
                                             Container(
                                               width: 60,
                                               height: 60,
-                                              decoration: BoxDecoration(
+                                              child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(12),
-                                                image: DecorationImage(
-                                                  image: AssetImage(
-                                                    item.iconPath,
-                                                  ),
+                                                child: Image.network(
+                                                  item.iconPath,
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -373,6 +422,7 @@ class _UserBehaviorState extends State<UserBehavior> {
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
+                                                  SizedBox(height: 4),
                                                   Text(
                                                     item.name,
                                                     style: TextStyle(
@@ -395,6 +445,36 @@ class _UserBehaviorState extends State<UserBehavior> {
                                                           ),
                                                     ),
                                                   ),
+                                                  if (item.status
+                                                          .toLowerCase() ==
+                                                      'success') ...[
+                                                    SizedBox(height: 4),
+                                                    Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.star,
+                                                          size: 16,
+                                                          color: Colors.amber,
+                                                        ),
+                                                        SizedBox(width: 4),
+                                                        Text(
+                                                          'Earned ${item.total_point} points',
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color:
+                                                                Color.fromARGB(
+                                                                  255,
+                                                                  59,
+                                                                  101,
+                                                                  34,
+                                                                ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                   Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -434,6 +514,10 @@ class _UserBehaviorState extends State<UserBehavior> {
                                                               Navigator.pushNamed(
                                                                 context,
                                                                 '/editBehavior',
+                                                                arguments: {
+                                                                  'behavior_id':
+                                                                      item.id,
+                                                                },
                                                               );
                                                             },
                                                             icon: Icon(
@@ -476,17 +560,15 @@ class _UserBehaviorState extends State<UserBehavior> {
                                                                         ),
                                                                       ),
                                                                       TextButton(
-                                                                        onPressed: () {
+                                                                        onPressed: () async {
                                                                           Navigator.pop(
-                                                                            context,
-                                                                          ); // Close dialog
-                                                                          _showExchangeSuccessSnackbar(
                                                                             context,
                                                                           );
-                                                                          Navigator.pop(
-                                                                            context,
-                                                                          ); // Go back to previous screen
+                                                                          await _deleteBehavior(
+                                                                            item.id.toString(),
+                                                                          );
                                                                         },
+
                                                                         child: Text(
                                                                           "Confirm",
                                                                           style: TextStyle(
