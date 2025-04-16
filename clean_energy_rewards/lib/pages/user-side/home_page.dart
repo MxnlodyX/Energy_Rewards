@@ -1,15 +1,14 @@
-import 'package:clean_energy_rewards/pages/user-side/how_to_use.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:clean_energy_rewards/pages/user-side/how_to_use.dart';
 import 'package:clean_energy_rewards/pages/components/sideBar.dart';
 import 'package:clean_energy_rewards/pages/components/navBar.dart';
 import 'package:clean_energy_rewards/pages/components/appBar.dart';
 import 'package:clean_energy_rewards/pages/model_for_test/reward_model.dart';
-import 'dart:math';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 class userHomepage extends StatefulWidget {
   const userHomepage({super.key});
@@ -28,12 +27,6 @@ class _userHomepageState extends State<userHomepage> {
     super.initState();
     _getRewards();
     _userInfomation();
-  }
-
-  void _getRewards() {
-    setState(() {
-      rewards = RewardModel.getRewards();
-    });
   }
 
   Future<String?> getUserId() async {
@@ -62,6 +55,26 @@ class _userHomepageState extends State<userHomepage> {
       }
     } catch (e) {
       print("Exception caught: $e");
+    }
+  }
+
+  Future<void> _getRewards() async {
+    final url = Uri.parse("http://192.168.56.1:4001/api/get_rewards");
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 201) {
+        final jsonData = json.decode(response.body);
+        final List<dynamic> rewardsJson = jsonData['data'];
+
+        setState(() {
+          rewards =
+              rewardsJson.map((item) => RewardModel.fromJson(item)).toList();
+        });
+      } else {
+        print("Failed to load rewards: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching rewards: $e");
     }
   }
 
@@ -298,13 +311,20 @@ class _userHomepageState extends State<userHomepage> {
                               physics: BouncingScrollPhysics(),
                               itemBuilder: (context, index) {
                                 return GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      "/detailReward",
-                                      arguments: rewards[index],
-                                    );
+                                  onTap: () async {
+                                    final shouldRefresh =
+                                        await Navigator.pushNamed(
+                                          context,
+                                          "/detailReward",
+                                          arguments: rewards[index],
+                                        );
+
+                                    if (shouldRefresh == true) {
+                                      await _getRewards();
+                                      await _userInfomation();
+                                    }
                                   },
+
                                   child: Container(
                                     width: 150,
                                     height: 350,
@@ -338,14 +358,14 @@ class _userHomepageState extends State<userHomepage> {
                                           borderRadius: BorderRadius.vertical(
                                             top: Radius.circular(16),
                                           ),
-                                          child: Image.asset(
+                                          child: Image.network(
                                             rewards[index].iconPath,
                                             height: 110,
                                             width: double.infinity,
                                             fit: BoxFit.cover,
-                                            alignment: Alignment.topCenter,
                                           ),
                                         ),
+
                                         // Reward details
                                         Padding(
                                           padding: const EdgeInsets.all(10),
