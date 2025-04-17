@@ -130,21 +130,27 @@ router.post("/exchange_reward/:reward_id", async (req, res) => {
 
 router.delete("/delete_reward/:id", async (req, res) => {
     try {
-        const [result] = await db.query("DELETE FROM rewards WHERE reward_id = ?",
-            [req.params.id]
-        );
+        const reward_id = req.params.id;
+        const [result] = await db.query("DELETE FROM rewards WHERE reward_id = ?", [reward_id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: "Reward not found" });
+        }
+
         res.status(200).json({
             success: true,
-            message: "delete rewards successfully",
-            affectedRows: result.affectedRows
-        })
-    } catch {
+            message: "Reward deleted successfully",
+        });
+    } catch (error) {
+        console.error("Delete Error:", error);
         res.status(500).json({
             success: false,
-            message: "Error delete Rewards",
+            message: "Server Error",
+            error: error.message,
         });
     }
-})
+});
+
 router.get('/reward_history/:user_id', async (req, res) => {
     const userId = req.params.user_id;
 
