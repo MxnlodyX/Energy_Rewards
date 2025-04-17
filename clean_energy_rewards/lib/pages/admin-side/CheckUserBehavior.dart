@@ -58,7 +58,7 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
   }
 
   Future<void> _getUserBehavior() async {
-    final url = "http://192.168.56.1:4001/api/get_all_behavior";
+    final url = "http://127.0.0.1:4001/api/get_all_behavior";
     try {
       var response = await http.get(
         Uri.parse(url),
@@ -83,7 +83,7 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
   }
 
   Future<void> _deleteBehavior(String behaviorId) async {
-    final url = "http://192.168.56.1:4001/api/delete_behavior/$behaviorId";
+    final url = "http://127.0.0.1:4001/api/delete_behavior/$behaviorId";
 
     try {
       final response = await http.delete(Uri.parse(url));
@@ -138,7 +138,7 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Your Behavior History",
+                          "All behavior waiting confirm",
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,

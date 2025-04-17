@@ -67,7 +67,7 @@ class _UserBehaviorState extends State<UserBehavior> {
 
   Future<void> _getUserBehavior() async {
     String? id = await getUserId();
-    final url = "http://192.168.56.1:4001/api/get_behavior/$id";
+    final url = "http://127.0.0.1:4001/api/get_behavior/$id";
     try {
       var response = await http.get(
         Uri.parse(url),
@@ -92,7 +92,7 @@ class _UserBehaviorState extends State<UserBehavior> {
   }
 
   Future<void> _deleteBehavior(String behaviorId) async {
-    final url = "http://192.168.56.1:4001/api/delete_behavior/$behaviorId";
+    final url = "http://127.0.0.1:4001/api/delete_behavior/$behaviorId";
 
     try {
       final response = await http.delete(Uri.parse(url));

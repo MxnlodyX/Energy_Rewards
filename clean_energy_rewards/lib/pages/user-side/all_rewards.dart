@@ -28,10 +28,10 @@ class _AllRewardsState extends State<AllRewards> {
   }
 
   Future<void> _getRewards() async {
-    final url = Uri.parse("http://192.168.56.1:4001/api/get_rewards");
+    final url = Uri.parse("http://127.0.0.1:4001/api/get_rewards");
     try {
       final response = await http.get(url);
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         final List<dynamic> rewardsJson = jsonData['data'];
 

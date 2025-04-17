@@ -48,7 +48,7 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
   }
 
   Future<void> _loadBehaviorDetail() async {
-    final url = "http://192.168.56.1:4001/api/get_behavior_id/$_behaviorId";
+    final url = "http://127.0.0.1:4001/api/get_behavior_id/$_behaviorId";
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -61,7 +61,7 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
           _dateController.text = behavior['behavior_date'] ?? '';
           if (behavior['image_path'] != null && behavior['image_path'] != '') {
             _existingImageUrl =
-                "http://192.168.56.1:4001/${behavior['image_path']}".replaceAll(
+                "http://127.0.0.1:4001/${behavior['image_path']}".replaceAll(
                   '\\',
                   '/',
                 );
@@ -78,7 +78,7 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
   Future<void> _confirmBehavior() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final url = "http://192.168.56.1:4001/api/verify_behavior/$_behaviorId";
+    final url = "http://127.0.0.1:4001/api/verify_behavior/$_behaviorId";
 
     try {
       final response = await http.put(

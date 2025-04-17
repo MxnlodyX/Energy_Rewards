@@ -24,7 +24,7 @@ class _RewardmanagementState extends State<Rewardmanagement> {
   }
 
   Future<void> _getRewards() async {
-    final url = "http://192.168.56.1:4001/api/get_rewards";
+    final url = "http://127.0.0.1:4001/api/get_rewards";
     try {
       var response = await http.get(
         Uri.parse(url),
@@ -54,7 +54,7 @@ class _RewardmanagementState extends State<Rewardmanagement> {
   }
 
   Future<void> _deleteReward(String behaviorId) async {
-    final url = "http://192.168.56.1:4001/api/delete_reward/$behaviorId";
+    final url = "http://127.0.0.1:4001/api/delete_reward/$behaviorId";
 
     try {
       final response = await http.delete(Uri.parse(url));
@@ -108,7 +108,7 @@ class _RewardmanagementState extends State<Rewardmanagement> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "All Reward total ${rewards.length} piece",
+                          "All Reward",
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
@@ -140,6 +140,7 @@ class _RewardmanagementState extends State<Rewardmanagement> {
                         ),
                       ],
                     ),
+                    SizedBox(height: 15),
                     if (rewards.isEmpty)
                       Padding(
                         padding: EdgeInsets.all(32),

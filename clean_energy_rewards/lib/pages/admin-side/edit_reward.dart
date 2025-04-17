@@ -79,9 +79,7 @@ class _EditRewardState extends State<EditReward> {
 
     setState(() => _isSubmitting = true);
 
-    final uri = Uri.parse(
-      'http://192.168.56.1:4001/api/update_reward/$_rewardID',
-    );
+    final uri = Uri.parse('http://127.0.0.1:4001/api/update_reward/$_rewardID');
     final request = http.MultipartRequest('PUT', uri);
 
     request.fields['reward_name'] = _nameController.text;

@@ -3,12 +3,23 @@ import 'package:http/http.dart' as http;
 
 class menuDrawer extends StatelessWidget {
   Future<void> _logOut(BuildContext context) async {
-    const url = "http://192.168.56.1:4001/api/signOut";
+    const url = "http://127.0.0.1:4001/api/signOut";
     var response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
     );
     if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Logout Successfully!'),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: Color.fromARGB(255, 142, 180, 134),
+        ),
+      );
       Navigator.pushNamedAndRemoveUntil(
         context,
         "/LoginGateWay",
@@ -35,7 +46,7 @@ class menuDrawer extends StatelessWidget {
               leading: Icon(Icons.dashboard),
               title: Text('Dashboard'),
               onTap: () {
-                Navigator.pushNamed(context, "/userhomePage");
+                Navigator.pushNamed(context, "/Dashboard");
               },
             ),
             ListTile(
@@ -53,7 +64,7 @@ class menuDrawer extends StatelessWidget {
               leading: Icon(Icons.star),
               title: Text('Rewards Management'),
               onTap: () {
-                Navigator.pushNamed(context, "/allReward");
+                Navigator.pushNamed(context, "/allRewards");
               },
             ),
 

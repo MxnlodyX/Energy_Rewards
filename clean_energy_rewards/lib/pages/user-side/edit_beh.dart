@@ -90,7 +90,7 @@ class _EditBehaviorState extends State<EditBehavior> {
     }
 
     try {
-      var url = "http://192.168.56.1:4001/api/edit_behavior/$_behaviorId";
+      var url = "http://127.0.0.1:4001/api/edit_behavior/$_behaviorId";
       var request = http.MultipartRequest('PUT', Uri.parse(url));
 
       request.fields['behavior_description'] = _behaviorController.text;
@@ -104,8 +104,16 @@ class _EditBehaviorState extends State<EditBehavior> {
       final resBody = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Behavior updated successfully!')),
+             ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Update Behavior Successfully!'),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            backgroundColor: Color.fromARGB(255, 142, 180, 134),
+          ),
         );
         Navigator.pushReplacement(
           context,

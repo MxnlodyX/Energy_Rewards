@@ -74,7 +74,7 @@ class _AddNewRewardState extends State<AddNewReward> {
 
     setState(() => _isSubmitting = true);
 
-    final uri = Uri.parse('http://192.168.56.1:4001/api/add_rewards');
+    final uri = Uri.parse('http://127.0.0.1:4001/api/add_rewards');
     final request = http.MultipartRequest('POST', uri);
 
     request.fields['reward_name'] = _nameController.text;

@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     try {
-      const url = "http://192.168.56.1:4001/api/userLogin";
+      const url = "http://127.0.0.1:4001/api/userLogin";
       var response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},

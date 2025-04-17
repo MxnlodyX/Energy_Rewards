@@ -20,7 +20,7 @@ class BehaviorModel {
     return BehaviorModel(
       id: json['behavior_id']?.toString() ?? '',
       name: json['behavior_description'] ?? '',
-      iconPath: 'http://192.168.56.1:4001/$formattedPath', // Full image URL
+      iconPath: 'http://127.0.0.1:4001/$formattedPath', // Full image URL
       total_point:
           json['total_points'] is int
               ? json['total_points']

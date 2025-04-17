@@ -23,7 +23,7 @@ class _DetailRewardState extends State<DetailReward> {
   Future<void> exchangeReward(int rewardId) async {
     final userId = await getUserId();
     final url = Uri.parse(
-      'http://192.168.56.1:4001/api/exchange_reward/$rewardId',
+      'http://127.0.0.1:4001/api/exchange_reward/$rewardId',
     );
 
     try {
@@ -40,7 +40,6 @@ class _DetailRewardState extends State<DetailReward> {
         Navigator.pop(context, true);
       } else if (response.statusCode == 400) {
         _pointNotEnoughtSnackbar();
-        Navigator.pop(context, false);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
