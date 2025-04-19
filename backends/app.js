@@ -45,6 +45,7 @@ app.use("/api", rewardsRoutes);
 app.use("/api", accountRoutes);
 app.use("/api", behaviorRoutes);
 app.use("/api", signInOutRoutes);
+
 app.get('/admin_dashboard_stats', async (req, res) => {
     try {
         const [rewardRows] = await db.query("SELECT COUNT(*) AS total_energy_rewards FROM rewards");
@@ -64,6 +65,6 @@ app.get('/admin_dashboard_stats', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running on http://0.0.0.0:${port}`);
 });

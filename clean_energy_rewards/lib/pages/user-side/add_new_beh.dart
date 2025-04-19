@@ -186,7 +186,7 @@ class _addBehaviorState extends State<addBehavior> {
 
                     // Behavior Description
                     const Text(
-                      "How do you use clean energy?",
+                      "How do you help reduce your impact on the environment?",
                       style: TextStyle(
                         color: Color.fromARGB(255, 116, 79, 64),
                         fontSize: 17,
