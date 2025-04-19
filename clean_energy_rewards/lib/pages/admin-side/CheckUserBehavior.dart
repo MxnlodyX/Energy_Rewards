@@ -58,7 +58,7 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
   }
 
   Future<void> _getUserBehavior() async {
-    final url = "http://127.0.0.1:4001/api/get_all_behavior";
+    final url = "https://energy-rewards.onrender.com/api/get_all_behavior";
     try {
       var response = await http.get(
         Uri.parse(url),
@@ -82,31 +82,31 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
     }
   }
 
-  Future<void> _deleteBehavior(String behaviorId) async {
-    final url = "http://127.0.0.1:4001/api/delete_behavior/$behaviorId";
+  // Future<void> _deleteBehavior(String behaviorId) async {
+  //   final url = "https://energy-rewards.onrender.com/api/delete_behavior/$behaviorId";
 
-    try {
-      final response = await http.delete(Uri.parse(url));
-      if (response.statusCode == 200) {
-        _showDeleteSnackBar(context);
-        _getUserBehavior();
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Delete failed: ${response.body}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error deleting behavior: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
+  //   try {
+  //     final response = await http.delete(Uri.parse(url));
+  //     if (response.statusCode == 200) {
+  //       _showDeleteSnackBar(context);
+  //       _getUserBehavior();
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: Text('Delete failed: ${response.body}'),
+  //           backgroundColor: Colors.red,
+  //         ),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(
+  //         content: Text('Error deleting behavior: $e'),
+  //         backgroundColor: Colors.red,
+  //       ),
+  //     );
+  //   }
+  // }
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
@@ -443,14 +443,14 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
   }
 }
 
-void _showDeleteSnackBar(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text('Delete successfully!'),
-      duration: Duration(seconds: 2),
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      backgroundColor: Color.fromARGB(255, 142, 180, 134),
-    ),
-  );
-}
+// void _showDeleteSnackBar(BuildContext context) {
+//   ScaffoldMessenger.of(context).showSnackBar(
+//     SnackBar(
+//       content: Text('Delete successfully!'),
+//       duration: Duration(seconds: 2),
+//       behavior: SnackBarBehavior.floating,
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+//       backgroundColor: Color.fromARGB(255, 142, 180, 134),
+//     ),
+//   );
+// }

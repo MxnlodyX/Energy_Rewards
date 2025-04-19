@@ -15,12 +15,13 @@ class BehaviorModel {
   });
   factory BehaviorModel.fromJson(Map<String, dynamic> json) {
     final rawPath = json['image_path'] ?? '';
-    final formattedPath = rawPath.replaceAll('\\', '/'); // แปลง \ เป็น /
+    final formattedPath = rawPath.replaceAll('\\', '/');
 
     return BehaviorModel(
       id: json['behavior_id']?.toString() ?? '',
       name: json['behavior_description'] ?? '',
-      iconPath: 'http://127.0.0.1:4001/$formattedPath', // Full image URL
+      iconPath:
+          'https://energy-rewards.onrender.com/$formattedPath',
       total_point:
           json['total_points'] is int
               ? json['total_points']

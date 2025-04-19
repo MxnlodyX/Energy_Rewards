@@ -23,7 +23,7 @@ class _DetailRewardState extends State<DetailReward> {
   Future<void> exchangeReward(int rewardId) async {
     final userId = await getUserId();
     final url = Uri.parse(
-      'http://127.0.0.1:4001/api/exchange_reward/$rewardId',
+      'https://energy-rewards.onrender.com/api/exchange_reward/$rewardId',
     );
 
     try {

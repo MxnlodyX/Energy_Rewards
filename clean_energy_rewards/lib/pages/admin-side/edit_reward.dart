@@ -79,7 +79,9 @@ class _EditRewardState extends State<EditReward> {
 
     setState(() => _isSubmitting = true);
 
-    final uri = Uri.parse('http://127.0.0.1:4001/api/update_reward/$_rewardID');
+    final uri = Uri.parse(
+      'https://energy-rewards.onrender.com/api/update_reward/$_rewardID',
+    );
     final request = http.MultipartRequest('PUT', uri);
 
     request.fields['reward_name'] = _nameController.text;
@@ -406,32 +408,6 @@ class _EditRewardState extends State<EditReward> {
       bottomNavigationBar: BottomNavBar(
         selectedIndex: null,
         onItemTapped: null,
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-    String label,
-    TextEditingController controller, {
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter $label';
-          }
-          return null;
-        },
       ),
     );
   }

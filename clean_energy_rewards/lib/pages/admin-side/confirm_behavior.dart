@@ -1,10 +1,7 @@
-import 'dart:io';
 import 'dart:convert';
 import 'package:clean_energy_rewards/pages/admin-side/CheckUserBehavior.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 
 import 'package:clean_energy_rewards/pages/components/sideBarAdmin.dart';
 import 'package:clean_energy_rewards/pages/components/navBarAdmin.dart';
@@ -19,9 +16,7 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _behaviorController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  File? _imageFile;
   String? _existingImageUrl;
-  bool _isPickerActive = false;
   String? _behaviorId;
   String? _selectedStatus;
   final TextEditingController _pointController = TextEditingController();
@@ -48,7 +43,8 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
   }
 
   Future<void> _loadBehaviorDetail() async {
-    final url = "http://127.0.0.1:4001/api/get_behavior_id/$_behaviorId";
+    final url =
+        "https://energy-rewards.onrender.com/api/get_behavior_id/$_behaviorId";
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -61,10 +57,8 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
           _dateController.text = behavior['behavior_date'] ?? '';
           if (behavior['image_path'] != null && behavior['image_path'] != '') {
             _existingImageUrl =
-                "http://127.0.0.1:4001/${behavior['image_path']}".replaceAll(
-                  '\\',
-                  '/',
-                );
+                "https://energy-rewards.onrender.com/${behavior['image_path']}"
+                    .replaceAll('\\', '/');
           }
         });
       } else {
@@ -78,7 +72,8 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
   Future<void> _confirmBehavior() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final url = "http://127.0.0.1:4001/api/verify_behavior/$_behaviorId";
+    final url =
+        "https://energy-rewards.onrender.com/api/verify_behavior/$_behaviorId";
 
     try {
       final response = await http.put(

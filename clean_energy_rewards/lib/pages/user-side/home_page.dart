@@ -36,7 +36,7 @@ class _userHomepageState extends State<userHomepage> {
 
   Future<void> _userInfomation() async {
     String? id = await getUserId();
-    final url = "http://127.0.0.1:4001/api/getInfo/$id";
+    final url = "https://energy-rewards.onrender.com/api/getInfo/$id";
     try {
       var response = await http.get(
         Uri.parse(url),
@@ -59,7 +59,9 @@ class _userHomepageState extends State<userHomepage> {
   }
 
   Future<void> _getRewards() async {
-    final url = Uri.parse("http://127.0.0.1:4001/api/get_rewards");
+    final url = Uri.parse(
+      "https://energy-rewards.onrender.com/api/get_rewards",
+    );
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -153,20 +155,6 @@ class _userHomepageState extends State<userHomepage> {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Icon(Icons.eco, color: Colors.white, size: 16),
-                        SizedBox(width: 5),
-                        Text(
-                          "Supporting SGD 7: ",
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.white.withOpacity(0.9),
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),

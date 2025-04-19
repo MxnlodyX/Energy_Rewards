@@ -29,7 +29,7 @@ class _AdminHomepageState extends State<AdminHomepage> {
   Future<void> fetchDashboardData() async {
     try {
       final response = await http.get(
-        Uri.parse('http://127.0.0.1:4001/admin_dashboard_stats'),
+        Uri.parse('https://energy-rewards.onrender.com/admin_dashboard_stats'),
       );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

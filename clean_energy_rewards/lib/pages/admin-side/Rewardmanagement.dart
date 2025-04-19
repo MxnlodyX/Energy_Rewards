@@ -24,7 +24,7 @@ class _RewardmanagementState extends State<Rewardmanagement> {
   }
 
   Future<void> _getRewards() async {
-    final url = "http://127.0.0.1:4001/api/get_rewards";
+    final url = "https://energy-rewards.onrender.com/api/get_rewards";
     try {
       var response = await http.get(
         Uri.parse(url),
@@ -54,7 +54,8 @@ class _RewardmanagementState extends State<Rewardmanagement> {
   }
 
   Future<void> _deleteReward(String behaviorId) async {
-    final url = "http://127.0.0.1:4001/api/delete_reward/$behaviorId";
+    final url =
+        "https://energy-rewards.onrender.com/api/delete_reward/$behaviorId";
 
     try {
       final response = await http.delete(Uri.parse(url));

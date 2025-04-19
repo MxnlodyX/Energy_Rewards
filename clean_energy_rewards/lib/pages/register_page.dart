@@ -63,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSubmitting = true);
     try {
-      const url = "http://127.0.0.1:4001/api/register";
+      const url = "https://energy-rewards.onrender.com/api/register";
       var request = http.MultipartRequest('POST', Uri.parse(url));
       request.fields['firstname'] = _firstnameController.text;
       request.fields['lastname'] = _lastnameController.text;

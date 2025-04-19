@@ -32,7 +32,9 @@ class _RewardHistoryState extends State<RewardHistory> {
   }
 
   static Future<List<RewardModel>> getRewards(String userId) async {
-    final url = Uri.parse('http://127.0.0.1:4001/api/reward_history/$userId');
+    final url = Uri.parse(
+      'https://energy-rewards.onrender.com/api/reward_history/$userId',
+    );
 
     try {
       final response = await http.get(url);
