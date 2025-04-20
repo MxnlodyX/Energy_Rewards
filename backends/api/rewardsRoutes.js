@@ -131,12 +131,13 @@ router.post("/exchange_reward/:reward_id", async (req, res) => {
 router.delete("/delete_reward/:id", async (req, res) => {
     try {
         const reward_id = req.params.id;
+        await db.query("SET FOREIGN_KEY_CHECKS = 0");
         const [result] = await db.query("DELETE FROM rewards WHERE reward_id = ?", [reward_id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ success: false, message: "Reward not found" });
         }
-
+        await db.query("SET FOREIGN_KEY_CHECKS = 1");
         res.status(200).json({
             success: true,
             message: "Reward deleted successfully",
