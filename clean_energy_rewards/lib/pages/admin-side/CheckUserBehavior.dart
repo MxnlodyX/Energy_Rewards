@@ -58,7 +58,7 @@ class _CheckuserbehaviorState extends State<Checkuserbehavior> {
   }
 
   Future<void> _getUserBehavior() async {
-    final url = "https://10.0.2.2:4001/api/get_all_behavior";
+    final url = "http://10.0.2.2:4001/api/get_all_behavior";
     try {
       var response = await http.get(
         Uri.parse(url),

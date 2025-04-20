@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class menuDrawer extends StatelessWidget {
   Future<void> _logOut(BuildContext context) async {
-    const url = "http:/10.0.2.2:4001/api/signOut";
+    const url = "http://10.0.2.2:4001/api/signOut";
     var response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
