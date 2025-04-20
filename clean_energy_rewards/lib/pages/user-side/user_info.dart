@@ -39,7 +39,7 @@ class _UserInfoState extends State<UserInfo> {
     final userId = await _getUserId();
     if (userId == null) return;
 
-    final url = "https://energy-rewards.onrender.com/api/getInfo/$userId";
+    final url = "http://10.0.2.2:4001/api/getInfo/$userId";
 
     try {
       final response = await http.get(

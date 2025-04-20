@@ -20,8 +20,7 @@ class BehaviorModel {
     return BehaviorModel(
       id: json['behavior_id']?.toString() ?? '',
       name: json['behavior_description'] ?? '',
-      iconPath:
-          'https://energy-rewards.onrender.com/$formattedPath',
+      iconPath: 'http://10.0.2.2:4001/$formattedPath',
       total_point:
           json['total_points'] is int
               ? json['total_points']

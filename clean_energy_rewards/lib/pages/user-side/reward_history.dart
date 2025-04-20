@@ -33,7 +33,7 @@ class _RewardHistoryState extends State<RewardHistory> {
 
   static Future<List<RewardModel>> getRewards(String userId) async {
     final url = Uri.parse(
-      'https://energy-rewards.onrender.com/api/reward_history/$userId',
+      'https://10.0.2.2:4001/api/reward_history/$userId',
     );
 
     try {
@@ -104,7 +104,6 @@ class _RewardHistoryState extends State<RewardHistory> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Column(
                     children: [
-                      const SizedBox(height: 20),
                       const Text(
                         "Your Rewards History",
                         style: TextStyle(

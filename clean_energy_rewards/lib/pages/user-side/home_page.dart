@@ -36,7 +36,7 @@ class _userHomepageState extends State<userHomepage> {
 
   Future<void> _userInfomation() async {
     String? id = await getUserId();
-    final url = "https://energy-rewards.onrender.com/api/getInfo/$id";
+    final url = "http://10.0.2.2:4001/api/getInfo/$id";
     try {
       var response = await http.get(
         Uri.parse(url),

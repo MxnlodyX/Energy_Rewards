@@ -28,9 +28,7 @@ class _AllRewardsState extends State<AllRewards> {
   }
 
   Future<void> _getRewards() async {
-    final url = Uri.parse(
-      "https://energy-rewards.onrender.com/api/get_rewards",
-    );
+    final url = Uri.parse("http://10.0.2.2:4001/api/get_rewards");
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {

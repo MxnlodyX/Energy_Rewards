@@ -23,7 +23,7 @@ class RewardModel {
       id: json['reward_id'], // ใช้เป็น int โดยตรง
       name: json['reward_name'] ?? '',
       description: json['description'] ?? '',
-      iconPath: 'https://energy-rewards.onrender.com/$formattedPath',
+      iconPath: 'http://10.0.2.2:4001/$formattedPath',
       total_point: json['exchange_point'] ?? 0,
       exchangeDate: json['exchange_on'] ?? '',
     );

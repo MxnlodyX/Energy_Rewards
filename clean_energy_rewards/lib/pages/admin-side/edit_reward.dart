@@ -79,9 +79,7 @@ class _EditRewardState extends State<EditReward> {
 
     setState(() => _isSubmitting = true);
 
-    final uri = Uri.parse(
-      'https://energy-rewards.onrender.com/api/update_reward/$_rewardID',
-    );
+    final uri = Uri.parse('http://10.0.2.2:4001/api/update_reward/$_rewardID');
     final request = http.MultipartRequest('PUT', uri);
 
     request.fields['reward_name'] = _nameController.text;

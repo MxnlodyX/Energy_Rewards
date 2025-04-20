@@ -67,7 +67,7 @@ class _UserBehaviorState extends State<UserBehavior> {
 
   Future<void> _getUserBehavior() async {
     String? id = await getUserId();
-    final url = "https://energy-rewards.onrender.com/api/get_behavior/$id";
+    final url = "http://10.0.2.2:4001/api/get_behavior/$id";
     try {
       var response = await http.get(
         Uri.parse(url),
@@ -92,8 +92,7 @@ class _UserBehaviorState extends State<UserBehavior> {
   }
 
   Future<void> _deleteBehavior(String behaviorId) async {
-    final url =
-        "https://energy-rewards.onrender.com/api/delete_behavior/$behaviorId";
+    final url = "http://10.0.2.2:4001/api/delete_behavior/$behaviorId";
 
     try {
       final response = await http.delete(Uri.parse(url));

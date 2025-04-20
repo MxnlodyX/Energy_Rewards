@@ -23,7 +23,7 @@ class _AddminLoginPageState extends State<AddminLoginPage> {
 
   Future<void> _signIn() async {
     try {
-      const url = "https://energy-rewards.onrender.com/api/adminLogin";
+      const url = "http://10.0.2.2:4001/api/adminLogin";
       var response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},

@@ -43,8 +43,7 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
   }
 
   Future<void> _loadBehaviorDetail() async {
-    final url =
-        "https://energy-rewards.onrender.com/api/get_behavior_id/$_behaviorId";
+    final url = "http://10.0.2.2:4001/api/get_behavior_id/$_behaviorId";
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -57,8 +56,10 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
           _dateController.text = behavior['behavior_date'] ?? '';
           if (behavior['image_path'] != null && behavior['image_path'] != '') {
             _existingImageUrl =
-                "https://energy-rewards.onrender.com/${behavior['image_path']}"
-                    .replaceAll('\\', '/');
+                "http://127.0.0.1:4001/${behavior['image_path']}".replaceAll(
+                  '\\',
+                  '/',
+                );
           }
         });
       } else {
@@ -72,8 +73,7 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
   Future<void> _confirmBehavior() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final url =
-        "https://energy-rewards.onrender.com/api/verify_behavior/$_behaviorId";
+    final url = "http://10.0.2.2:4001/api/verify_behavior/$_behaviorId";
 
     try {
       final response = await http.put(

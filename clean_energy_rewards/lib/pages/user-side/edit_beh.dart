@@ -90,8 +90,7 @@ class _EditBehaviorState extends State<EditBehavior> {
     }
 
     try {
-      var url =
-          "https://energy-rewards.onrender.com/api/edit_behavior/$_behaviorId";
+      var url = "http://10.0.2.2:4001/api/edit_behavior/$_behaviorId";
       var request = http.MultipartRequest('PUT', Uri.parse(url));
 
       request.fields['behavior_description'] = _behaviorController.text;

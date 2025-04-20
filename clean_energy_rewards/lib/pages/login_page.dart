@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
     try {
-      const url = "https://energy-rewards.onrender.com/api/userLogin";
+      const url = "http://10.0.2.2:4001/api/userLogin";
       var response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},

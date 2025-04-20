@@ -94,7 +94,7 @@ class _addBehaviorState extends State<addBehavior> {
     setState(() => _isSubmitting = true);
 
     try {
-      const url = "https://energy-rewards.onrender.com/api/add_behavior";
+      const url = "http://10.0.2.2:4001/api/add_behavior";
       String? userId = await getUserId();
       var request = http.MultipartRequest('POST', Uri.parse(url));
       request.fields['behavior_description'] = _behaviorController.text;

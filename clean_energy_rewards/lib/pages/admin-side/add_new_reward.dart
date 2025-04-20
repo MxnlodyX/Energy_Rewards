@@ -74,9 +74,7 @@ class _AddNewRewardState extends State<AddNewReward> {
 
     setState(() => _isSubmitting = true);
 
-    final uri = Uri.parse(
-      'https://energy-rewards.onrender.com/api/add_rewards',
-    );
+    final uri = Uri.parse('http://10.0.2.2:4001/api/add_rewards');
     final request = http.MultipartRequest('POST', uri);
 
     request.fields['reward_name'] = _nameController.text;
