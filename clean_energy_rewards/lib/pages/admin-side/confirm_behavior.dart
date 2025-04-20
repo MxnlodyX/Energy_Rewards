@@ -55,11 +55,8 @@ class _ConfirmBehaviorState extends State<ConfirmBehavior> {
           _behaviorController.text = behavior['behavior_description'] ?? '';
           _dateController.text = behavior['behavior_date'] ?? '';
           if (behavior['image_path'] != null && behavior['image_path'] != '') {
-            _existingImageUrl =
-                "http://127.0.0.1:4001/${behavior['image_path']}".replaceAll(
-                  '\\',
-                  '/',
-                );
+            _existingImageUrl = "http://10.0.2.2:4001/${behavior['image_path']}"
+                .replaceAll('\\', '/');
           }
         });
       } else {
